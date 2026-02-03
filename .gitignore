@@ -1,0 +1,77 @@
+# Dependecies
+node_modules/
+/.pnp
+.pnp.js
+
+# Env
+.env
+.env*.local
+.env.development
+.env.production
+.env.test
+!.env.example
+
+# Next
+frontend/.next/
+frontend/out/
+.next/
+out/
+
+# builds
+build/
+dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Tests
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# Uploads
+backend/uploads/
+backend/public/uploads/
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Package
+package-lock.json
+
+# Temp files
+*.tmp
+*.temp
+.temp/
+tmp/
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
