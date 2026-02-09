@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+import Button from "@/components/ui/Button";
 import DateInput from "@/components/ui/DateInput";
+import { Message, MessageType } from "@/components/ui/Message";
 import TagInput from "@/components/ui/TagInput";
 import Tags from "@/components/ui/Tags";
 import TextArea from "@/components/ui/TextArea";
-import Button from "@/components/ui/Button";
 
 import { useNotes, NoteCreate } from "@/hooks/useNotes";
 import { userAgentFromString } from "next/server";
@@ -16,17 +17,24 @@ interface Props {
 }
 
 export default function NoteForm({ onCreated }: Props) {
-    const today = new Date().toISOString().split('T')[0];
+    // Define now datetime
+    const dtNow = new Date();
+    dtNow.setMinutes(dtNow.getMinutes() - dtNow.getTimezoneOffset());
+    const now = dtNow.toISOString().slice(0, 16);
 
     const { createNote } = useNotes();
     const [note, setNote] = useState<NoteCreate>({
-        date: today,
+        date: now,
         content: '',
         tags: [],
     });
     const [tagToAdd, setTagToAdd] = useState('');
+    const [message, setMessage] = useState<MessageType>({
+        content: '',
+        type: 'neutral',
+        visible: false
+    });
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         console.log(note.tags);
@@ -36,13 +44,18 @@ export default function NoteForm({ onCreated }: Props) {
         e.preventDefault();
 
         setLoading(true);
-        setSuccess(false);
+        resetMessage();
 
         try {
             const res = await createNote(note);
             
             if (res.success) {
-                setSuccess(true);
+                setMessage({
+                    content: 'Note ajoutée avec succès !',
+                    type: 'success',
+                    visible: true
+                });
+                resetNote();
                 onCreated(true);
             }
         } catch (error) {
@@ -52,8 +65,28 @@ export default function NoteForm({ onCreated }: Props) {
         }
     }
 
+    function resetMessage() {
+        setMessage({
+            content: '',
+            type: 'neutral',
+            visible: false
+        })
+    }
+
+    function resetNote() {
+        setNote({
+            date: now,
+            content: '',
+            tags: []
+        });
+    }
+
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setSuccess(false);
+        setMessage({
+            content: '',
+            type: 'success',
+            visible: false
+        })
         setNote({ ... note, content: e.target.value });
     }
 
@@ -93,7 +126,11 @@ export default function NoteForm({ onCreated }: Props) {
                 type="submit"
                 label="Ajouter"
                 disabled={loading}
-                success={success}
+            />
+            <Message
+                content={message.content}
+                type={message.type}
+                visible={message.visible}
             />
         </form>
     );

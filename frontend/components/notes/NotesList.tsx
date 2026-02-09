@@ -21,13 +21,22 @@ export default function NotesList({ refreshKey }: Props) {
         getAllNotes();
     }, [refreshKey]);
 
+    function convertToLocalTime(dateUTC: string) {
+        const dt = new Date(dateUTC);
+        dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+
+        const formated = dt.toISOString().slice(0, 16).replace('T', ' ');
+
+        return formated;
+    }
+
     // if (loading) return <p>Chargement des notes...</p>;
 
     return (
         <ul className="w-full space-y-4">
             {notes.map((note) => (
                 <li key={note._id} className="flex flex-col gap-4 border-2 border-stone-800 p-4 rounded-lg">
-                    <p>{note.date}</p>
+                    <p>{convertToLocalTime(note.date)}</p>
                     <p className="whitespace-pre-line">{note.content}</p>
                     <Tags tags={note.tags} />
                 </li>

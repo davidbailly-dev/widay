@@ -8,7 +8,7 @@ interface Props {
 export default function DateInput({ value, onChange }: Props) {
     return (
         <Input
-            type="date"
+            type="datetime-local"
             value={value}
             onChange={onChange}
         />
