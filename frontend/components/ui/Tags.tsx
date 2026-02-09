@@ -11,7 +11,7 @@ export default function Tags({ tags }: Props) {
                 key={tag}
                 className="bg-blue-400 rounded-sm px-3 py-1"
             >
-                    {tag}
+                {tag}
             </span>
         ))}
         </div>
