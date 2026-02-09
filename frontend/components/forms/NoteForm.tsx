@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import Button from "@/components/ui/Button";
 import DateInput from "@/components/ui/DateInput";
@@ -36,6 +36,16 @@ export default function NoteForm({ onCreated }: Props) {
         visible: false
     });
     const [loading, setLoading] = useState(false);
+
+    // Used to focus to input after submiting a note
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    // Focus on input content when note created with success
+    useEffect(() => {
+        if (message.type == 'success') {
+            inputRef.current?.focus();
+        }
+    }, [message]);
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -108,7 +118,7 @@ export default function NoteForm({ onCreated }: Props) {
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-4 w-full"
+            className="flex flex-col gap-4 w-full bg-stone-900 border border-stone-800 rounded-lg p-4"
         >
             <DateInput
                 value={note.date}
@@ -116,7 +126,8 @@ export default function NoteForm({ onCreated }: Props) {
             />
             <TextArea
                 value={note.content}
-                onChange={(e) => handleContentChange(e)}
+                inputRef={inputRef}
+                onChange={(e) => {handleContentChange(e)}}
             />
             <TagInput
                 value={tagToAdd}

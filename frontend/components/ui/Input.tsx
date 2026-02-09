@@ -1,8 +1,11 @@
+import { useRef } from 'react';
+
 interface Props {
     className?: string,
     type?: string,
     value?: string,
     placeHolder?: string,
+    inputRef?: React.Ref<HTMLInputElement>,
     onChange?: React.ChangeEventHandler<HTMLInputElement>
 }
 
@@ -11,11 +14,13 @@ export default function Input({
     type = "text",
     value,
     placeHolder='',
+    inputRef,
     onChange
 }: Props) {
     return (
         <input
             className={`bg-stone-800 p-2 rounded-lg border-0 focus:ring-2 focus:outline-0 focus:ring-stone-600 ${className}`}
+            ref={inputRef}
             type={type}
             value={value}
             placeholder={placeHolder}
