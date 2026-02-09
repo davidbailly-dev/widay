@@ -1,30 +1,28 @@
 import { noteService } from '@/lib/api/note.service';
-import { use } from 'react';
-
-export interface Notes {
-    date: string,
-    notes: Note[]
-}
+import { get } from 'node:http';
+import { useState } from 'react';
 
 export interface Note {
-    _id: string;
-    title: string;
-    content: string;
-    date: string;
-    tags: string[];
+    _id: string,
+    content: string,
+    date: string,
+    tags: string[],
 }
 
-export interface CreateNote {
-    title: string;
-    content: string;
-    date: string;
-    tags: string[];
+export interface NoteCreate {
+    content: string,
+    date: string,
+    tags?: string[],
 }
 
 export const useNotes = () => {
+    const [notes, setNotes] = useState<Note[]>([]);
+
     const getAllNotes = async () => {
         try {
             const notes = await noteService.getAll();
+            setNotes(notes.data.notes);
+
             return notes.data.notes;
         } catch (error) {
             console.error('Error fetching notes:', error);
@@ -32,9 +30,11 @@ export const useNotes = () => {
         }
     };
 
-    const createNote = async (data: CreateNote) => {
+    const createNote = async (data: NoteCreate) => {
         try {
             const newNote = await noteService.create(data);
+            await getAllNotes();
+            
             return newNote;
         } catch (error) {
             console.error('Error creating note:', error);
@@ -43,6 +43,7 @@ export const useNotes = () => {
     };
 
     return {
+        notes,
         getAllNotes,
         createNote,
     };

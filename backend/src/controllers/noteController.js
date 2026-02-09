@@ -3,7 +3,7 @@ const Note = require('../models/Note');
 // Get all notes
 exports.getNotes = async (req, res, next) => {
     try {
-        const notes = await Note.find({});
+        const notes = await Note.find({}).sort({date: -1});
 
         res.json({
             success: true,
@@ -20,16 +20,18 @@ exports.getNotes = async (req, res, next) => {
 // Create a new note
 exports.createNote = async (req, res, next) => {
     try {
-        const { date, title, content, tags } = req.body;
+        const { date, content, tags } = req.body;
 
         const note = new Note({
             date,
-            title,
             content,
             tags
         });
 
         const saved = await note.save();
+
+        // Force delay for tests
+        // await new Promise(resolve => setTimeout(resolve, 1500));
 
         res.status(201).json({
             success: true,
