@@ -25,7 +25,7 @@ export default function NotesList({ refreshKey }: Props) {
         const dt = new Date(dateUTC);
         dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
 
-        const formated = dt.toISOString().slice(0, 16).replace('T', ' ');
+        const formated = dt.toISOString().slice(0, 19).replace('T', ' ');
 
         return formated;
     }

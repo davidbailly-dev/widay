@@ -5,7 +5,7 @@ export interface MessageType {
 }
 
 const TYPE_CLASSES = {
-    success: 'bg-emerald-700 border-1 border-emerald-300',
+    success: 'bg-emerald-700',
     error: 'bg-red-600',
     warning: 'bg-orange-600',
     neutral: 'bg-stone-500'

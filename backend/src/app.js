@@ -23,7 +23,10 @@ app.use( '/api', require('./routes') );
 
 // Manage errors
 app.use((err, req, res, next) => {
-
+    res.status(400).json({
+        success: false,
+        message: err.message
+    });
 });
 
 // Run server

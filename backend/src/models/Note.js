@@ -12,6 +12,12 @@ const noteSchema = new mongoose.Schema({
     },
     tags: {
         type: [String],
+        validate: {
+            validator: function(v) {
+                return v.length <= 2
+            },
+            message: 'Max 2 tags can be added to a note'
+        }
     }
 }, { timestamps: true });
 

@@ -11,6 +11,7 @@ import TextArea from "@/components/ui/TextArea";
 
 import { useNotes, NoteCreate } from "@/hooks/useNotes";
 import { userAgentFromString } from "next/server";
+import { JSONValue } from "next/dist/server/config-shared";
 
 interface Props {
     onCreated: (created: boolean) => void;
@@ -20,7 +21,7 @@ export default function NoteForm({ onCreated }: Props) {
     // Define now datetime
     const dtNow = new Date();
     dtNow.setMinutes(dtNow.getMinutes() - dtNow.getTimezoneOffset());
-    const now = dtNow.toISOString().slice(0, 16);
+    const now = dtNow.toISOString().slice(0, 19);
 
     const { createNote } = useNotes();
     const [note, setNote] = useState<NoteCreate>({
@@ -35,10 +36,6 @@ export default function NoteForm({ onCreated }: Props) {
         visible: false
     });
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        console.log(note.tags);
-    }, [note]);
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -59,7 +56,14 @@ export default function NoteForm({ onCreated }: Props) {
                 onCreated(true);
             }
         } catch (error) {
-            console.error('Error submiting note to create : ', error);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            
+            setMessage({
+                content: message,
+                type: 'error',
+                visible: true
+            });
+            // console.error('Error submiting note to create : ', err);
         } finally {
             setLoading(false);
         }
@@ -110,9 +114,6 @@ export default function NoteForm({ onCreated }: Props) {
                 value={note.date}
                 onChange={(e) => setNote({...note, date: e.target.value})}
             />
-            <Tags
-                tags={note.tags || []}
-            />
             <TextArea
                 value={note.content}
                 onChange={(e) => handleContentChange(e)}
@@ -121,6 +122,9 @@ export default function NoteForm({ onCreated }: Props) {
                 value={tagToAdd}
                 onChange={handleTagInputChange}
                 onClick={handleTagInputClick}
+            />
+            <Tags
+                tags={note.tags || []}
             />
             <Button
                 type="submit"
