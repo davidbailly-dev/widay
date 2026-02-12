@@ -6,19 +6,22 @@ import { useNotes, Note } from "@/hooks/useNotes";
 import Tags from "@/components/ui/Tags";
 
 interface Props {
-    refreshKey: number
+    refreshKey: number,
+    selectedDate?: string,
 };
 
-export default function NotesList({ refreshKey }: Props) {
-    const { notes, getAllNotes } = useNotes();
-    const [loading, setLoading] = useState(true);
+export default function NotesList({
+    refreshKey,
+    selectedDate = ''
+}: Props) {
+    const { notes, getNotes, loading } = useNotes();
 
     useEffect(() => {
-        getAllNotes();
+        getNotes(selectedDate);
     }, []);
 
     useEffect(() => {
-        getAllNotes();
+        getNotes(selectedDate);
     }, [refreshKey]);
 
     function convertToLocalTime(dateUTC: string) {
@@ -30,7 +33,7 @@ export default function NotesList({ refreshKey }: Props) {
         return formated;
     }
 
-    // if (loading) return <p>Chargement des notes...</p>;
+    if (loading) return <p>Chargement des notes...</p>;
 
     return (
         <ul className="space-y-4">

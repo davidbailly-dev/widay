@@ -1,5 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+
 interface Props {
     className?: string;
+    onSelectedDay: (date :string) => void;
 }
 
 interface Day {
@@ -16,10 +21,13 @@ interface Week {
     days: Day[];
 }
 
-export default function Calendar({ className }: Props) {
+export default function Calendar({ className, onSelectedDay }: Props) {
+    const [selectedDay, setSelectedDay] = useState<String>('');
+
     const locale= 'fr-FR';
     const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     const today = new Date();
+    const todayISO = getISODate(today);
     const year = today.getFullYear();
     const month = {
         name: today.toLocaleString(locale, { month: 'long' }),
@@ -27,12 +35,17 @@ export default function Calendar({ className }: Props) {
     };
     const weeks = getWeeksInMonth(year, month.num - 1);
 
+    const handleOnClickDay = async (date: string) => {
+        setSelectedDay(date);
+        onSelectedDay(date);
+    };
+
     return (
         <div className={`border border-stone-800 p-4 rounded-lg ${className}`}>
             <div className="text-center mb-4 uppercase">{year} - {month.name}</div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
                 <div>
-                    <div className="grid grid-cols-7 gap-4">
+                    <div className="grid grid-cols-7">
                         {daysOfWeek.map((day) => (
                             <span
                                 key={day}
@@ -46,12 +59,13 @@ export default function Calendar({ className }: Props) {
                 {weeks.map((week) => (
                     <div
                         key={week.num}
-                        className="grid grid-cols-7 gap-4"
+                        className="grid grid-cols-7 gap-2"
                     >
                         {week.days.map((day) => (
                             <span
                                 key={day.date}
-                                className={`aspect-square align-top bg-stone-700 ${day.outOfTheMonth ? 'opacity-50' : ''} px-2 py-1 rounded-lg cursor-pointer hover:bg-orange-500`}
+                                className={`aspect-square align-top border ${day.outOfTheMonth ? 'opacity-50' : ''} ${day.date === selectedDay ? 'bg-orange-500 border-white' : todayISO === day.date ? 'bg-blue-500 border-transparent' : 'bg-stone-700 border-transparent'} px-2 py-1 rounded-lg cursor-pointer hover:bg-orange-500`}
+                                onClick={() => handleOnClickDay(day.date)}
                             >
                                 {day.numInTheMonth} {day.outOfTheMonth && day.monthName.slice(0, 3)}
                             </span>

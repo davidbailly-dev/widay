@@ -8,21 +8,30 @@ import NotesList from "@/components/notes/NotesList";
 
 export default function Home() {
     const [refreshKey, setRefreshKey] = useState(0); // Permet de savoir si la liste des notes a changé
+    const [selectedDate, setSelectedDate] = useState('');
 
-    // Permet de détecter si une note a été créée et de rafraîchir la clé de la liste des notes
-    const handleCreated = () => {
+    // Detect if a note has been created and refresh notes list component's key
+    const handleRefreshNotesList = () => {
         const key = Date.now();
         setRefreshKey(key);
     };
 
+    const handleSelectedDay = (date: string) => {
+        setSelectedDate(date);
+        handleRefreshNotesList();
+    }
+
     return (
         <div className="flex justify-center p-8 gap-4 h-screen overflow-hidden">
             <div className="flex flex-col w-1/3 gap-4 overflow-y-auto h-full">
-                <NoteForm onCreated={handleCreated} />
-                <Calendar className="" />
+                <NoteForm onCreated={handleRefreshNotesList} />
+                <Calendar onSelectedDay={handleSelectedDay} />
             </div>
             <div className="flex flex-col w-2/3 overflow-y-auto h-full">
-                <NotesList refreshKey={refreshKey} />
+                <NotesList
+                    refreshKey={refreshKey}
+                    selectedDate={selectedDate}
+                />
             </div>
         </div>
     );

@@ -17,23 +17,27 @@ export interface NoteCreate {
 
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const getAllNotes = async () => {
+    const getNotes = async (date?: string) => {
         try {
-            const notes = await noteService.getAll();
+            setLoading(true);
+            const notes = await noteService.get(date);
             setNotes(notes.data.notes);
 
             return notes.data.notes;
         } catch (error) {
             console.error('Error fetching notes:', error);
             throw error;
+        } finally {
+            setLoading(false);
         }
     };
 
     const createNote = async (data: NoteCreate) => {
         try {
             const newNote = await noteService.create(data);
-            await getAllNotes();
+            await getNotes();
             
             return newNote;
         } catch (error) {
@@ -44,7 +48,8 @@ export const useNotes = () => {
 
     return {
         notes,
-        getAllNotes,
+        loading,
+        getNotes,
         createNote,
     };
 };
