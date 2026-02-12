@@ -117,8 +117,8 @@ export default function NoteForm({ onCreated }: Props) {
 
     return (
         <form
+            className="flex flex-col gap-4 bg-stone-900 border border-stone-800 rounded-lg p-4"
             onSubmit={handleSubmit}
-            className="flex flex-col gap-4 w-full bg-stone-900 border border-stone-800 rounded-lg p-4"
         >
             <DateInput
                 value={note.date}

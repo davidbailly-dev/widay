@@ -15,7 +15,7 @@ export default function Tags({ tags }: Props) {
         {tags.map((tag) => (
             <span
                 key={tag}
-                className="flex items-center bg-orange-400 hover:bg-red-600 rounded-sm px-2 py-1 gap-1 cursor-pointer"
+                className="flex items-center bg-orange-500 hover:bg-red-600 rounded-sm px-2 py-1 gap-1 cursor-pointer"
                 onClick={() => handleDeleteTag(tag)}
             >
                 <span

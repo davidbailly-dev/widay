@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import Calendar from "@/components/calendar/Calendar";
 import NoteForm from "@/components/forms/NoteForm";
 import NotesList from "@/components/notes/NotesList";
 
@@ -15,9 +16,14 @@ export default function Home() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center m-auto md:w-1/2 sm:w-full p-8 gap-4">
-            <NoteForm onCreated={handleCreated} />
-            <NotesList refreshKey={refreshKey} />
+        <div className="flex justify-center p-8 gap-4 h-screen overflow-hidden">
+            <div className="flex flex-col w-1/3 gap-4 overflow-y-auto h-full">
+                <NoteForm onCreated={handleCreated} />
+                <Calendar className="" />
+            </div>
+            <div className="flex flex-col w-2/3 overflow-y-auto h-full">
+                <NotesList refreshKey={refreshKey} />
+            </div>
         </div>
     );
 }

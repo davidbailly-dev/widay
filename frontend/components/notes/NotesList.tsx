@@ -33,7 +33,7 @@ export default function NotesList({ refreshKey }: Props) {
     // if (loading) return <p>Chargement des notes...</p>;
 
     return (
-        <ul className="w-full space-y-4">
+        <ul className="space-y-4">
             {notes.map((note) => (
                 <li key={note._id} className="flex flex-col gap-4 border-2 border-stone-800 p-4 rounded-lg">
                     <p>{convertToLocalTime(note.date)}</p>
