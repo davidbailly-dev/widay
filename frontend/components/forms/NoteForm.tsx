@@ -3,21 +3,19 @@
 import { useEffect, useState, useRef } from "react";
 
 import Button from "@/components/ui/Button";
-import DateInput from "@/components/ui/DateInput";
 import { Message, MessageType } from "@/components/ui/Message";
 import TagInput from "@/components/ui/TagInput";
 import Tags from "@/components/ui/Tags";
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes, NoteCreate } from "@/hooks/useNotes";
-import { userAgentFromString } from "next/server";
-import { JSONValue } from "next/dist/server/config-shared";
 
 interface Props {
+    selectedDate?: string;
     onCreated: (created: boolean) => void;
 }
 
-export default function NoteForm({ onCreated }: Props) {
+export default function NoteForm({ selectedDate, onCreated }: Props) {
     // Define now datetime
     const dtNow = new Date();
     dtNow.setMinutes(dtNow.getMinutes() - dtNow.getTimezoneOffset());
@@ -25,7 +23,7 @@ export default function NoteForm({ onCreated }: Props) {
 
     const { createNote } = useNotes();
     const [note, setNote] = useState<NoteCreate>({
-        date: now,
+        date: selectedDate || now,
         content: '',
         tags: [],
     });
@@ -46,6 +44,12 @@ export default function NoteForm({ onCreated }: Props) {
             inputRef.current?.focus();
         }
     }, [message]);
+
+    useEffect(() => {
+        if (selectedDate) {
+            setNote({...note, date: selectedDate});
+        }
+    }, [selectedDate]);
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -120,10 +124,9 @@ export default function NoteForm({ onCreated }: Props) {
             className="flex flex-col gap-4 bg-stone-900 border border-stone-800 rounded-lg p-4"
             onSubmit={handleSubmit}
         >
-            <DateInput
-                value={note.date}
-                onChange={(e) => setNote({...note, date: e.target.value})}
-            />
+            <div>
+                {/* note selected date : {note.date} */}
+            </div>
             <TextArea
                 value={note.content}
                 inputRef={inputRef}

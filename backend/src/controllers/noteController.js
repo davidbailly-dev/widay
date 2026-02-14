@@ -4,20 +4,26 @@ const Note = require('../models/Note');
 exports.getNotes = async (req, res, next) => {
     try {
         const { date } = req.query;
-        const startDate = new Date(date);
-        
-        startDate.setHours(0, 0, 0, 0);
+        let notes;
 
-        const endDate = new Date(date);
-        
-        endDate.setHours(23, 59, 59, 999);
-        
-        const notes = await Note.find({ 
-            date: { 
-                $gte: startDate,
-                $lte: endDate
-            }
-        }).sort({date: -1});
+        if (date) {
+            const startDate = new Date(date);
+            
+            startDate.setHours(0, 0, 0, 0);
+
+            const endDate = new Date(date);
+            
+            endDate.setHours(23, 59, 59, 999);
+            
+            notes = await Note.find({ 
+                date: { 
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            }).sort({date: -1});
+        } else {
+            notes = await Note.find().sort({date: -1});
+        }
 
         // Force delay for tests
         await new Promise(resolve => setTimeout(resolve, 1500));

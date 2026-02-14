@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { CgSpinner } from "react-icons/cg";
 
 import { useNotes, Note } from "@/hooks/useNotes";
 import Tags from "@/components/ui/Tags";
@@ -18,10 +19,7 @@ export default function NotesList({
 
     useEffect(() => {
         getNotes(selectedDate);
-    }, []);
-
-    useEffect(() => {
-        getNotes(selectedDate);
+        console.log('refreshing notes list with date', selectedDate);
     }, [refreshKey]);
 
     function convertToLocalTime(dateUTC: string) {
@@ -33,7 +31,21 @@ export default function NotesList({
         return formated;
     }
 
-    if (loading) return <p>Chargement des notes...</p>;
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <CgSpinner className="animate-spin w-8 h-8 text-blue-500" />
+            </div>
+        );
+    }
+
+    if (notes.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <p className="text-stone-500">No notes found for this date.</p>
+            </div>
+        );
+    }
 
     return (
         <ul className="space-y-4">
