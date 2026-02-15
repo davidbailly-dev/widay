@@ -2,13 +2,14 @@
 
 import { useEffect, useState, useRef } from "react";
 
+import { NoteCreate } from "@/types";
 import Button from "@/components/ui/Button";
 import { Message, MessageType } from "@/components/ui/Message";
 import TagInput from "@/components/ui/TagInput";
 import Tags from "@/components/ui/Tags";
 import TextArea from "@/components/ui/TextArea";
 
-import { useNotes, NoteCreate } from "@/hooks/useNotes";
+import { useNotes } from "@/hooks/useNotes";
 
 interface Props {
     selectedDate?: string;

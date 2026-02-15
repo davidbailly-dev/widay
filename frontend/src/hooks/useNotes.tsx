@@ -1,19 +1,7 @@
-import { noteService } from '@/lib/api/note.service';
-import { get } from 'node:http';
+import { Note, NoteCreate } from '@/types';
+
+import { noteService } from '@/services/api/note.service';
 import { useState } from 'react';
-
-export interface Note {
-    _id: string,
-    content: string,
-    date: string,
-    tags: string[],
-}
-
-export interface NoteCreate {
-    content: string,
-    date: string,
-    tags?: string[],
-}
 
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);

@@ -7,7 +7,7 @@ import NoteForm from "@/components/forms/NoteForm";
 import NotesList from "@/components/notes/NotesList";
 
 export default function Home() {
-    const today = new Date().toISOString(); // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
     const [refreshKey, setRefreshKey] = useState(0); // Key ot check if notes list should be refreshed
     const [selectedDate, setSelectedDate] = useState(today); // Selected date in calendar, used to filter notes list

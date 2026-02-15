@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { CgSpinner } from "react-icons/cg";
+import { useEffect, useState } from 'react';
+import { CgSpinner } from 'react-icons/cg';
 
-import { useNotes, Note } from "@/hooks/useNotes";
-import Tags from "@/components/ui/Tags";
+import { useNotes } from '@/hooks/useNotes';
+import Tags from '@/components/ui/Tags';
 
 interface Props {
     refreshKey: number,

@@ -7,20 +7,7 @@ exports.getNotes = async (req, res, next) => {
         let notes;
 
         if (date) {
-            const startDate = new Date(date);
-            
-            startDate.setHours(0, 0, 0, 0);
-
-            const endDate = new Date(date);
-            
-            endDate.setHours(23, 59, 59, 999);
-            
-            notes = await Note.find({ 
-                date: { 
-                    $gte: startDate,
-                    $lte: endDate
-                }
-            }).sort({date: -1});
+            notes = await Note.find({ date }).sort({date: -1});
         } else {
             notes = await Note.find().sort({date: -1});
         }
