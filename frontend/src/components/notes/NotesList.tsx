@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 
 import { useNotes } from '@/hooks/useNotes';
-import Tags from '@/components/ui/Tags';
+import { TagItem } from '@/components/ui/TagItem';
 
 interface Props {
     refreshKey: number,
@@ -21,15 +21,6 @@ export default function NotesList({
         getNotes(selectedDate);
         console.log('refreshing notes list with date', selectedDate);
     }, [refreshKey]);
-
-    function convertToLocalTime(dateUTC: string) {
-        const dt = new Date(dateUTC);
-        dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
-
-        const formated = dt.toISOString().slice(0, 19).replace('T', ' ');
-
-        return formated;
-    }
 
     if (loading) {
         return (
@@ -48,12 +39,16 @@ export default function NotesList({
     }
 
     return (
-        <ul className="space-y-4">
+        <ul className="grid grid-cols-3 gap-4 space-y-4">
             {notes.map((note) => (
-                <li key={note._id} className="flex flex-col gap-4 border-2 border-stone-800 p-4 rounded-lg">
-                    <p>{convertToLocalTime(note.date)}</p>
+                <li key={note._id} className="flex flex-col gap-4 h-full border-2 border-stone-800 p-4 rounded-lg">
+                    <span className="flex gap-2">
+                    {note.tags.map((tag) => (
+                        <TagItem key={tag} name={tag} />
+                    ))}
+                    </span>
+                    <p>{note.date}</p>
                     <p className="whitespace-pre-line">{note.content}</p>
-                    <Tags tags={note.tags} />
                 </li>
             ))}
         </ul>

@@ -7,13 +7,13 @@ exports.getNotes = async (req, res, next) => {
         let notes;
 
         if (date) {
-            notes = await Note.find({ date }).sort({date: -1});
+            notes = await Note.find({ date }).sort({createdAt: -1});
         } else {
-            notes = await Note.find().sort({date: -1});
+            notes = await Note.find().sort({createdAt: -1});
         }
 
         // Force delay for tests
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // await new Promise(resolve => setTimeout(resolve, 1500));
 
         res.json({
             success: true,

@@ -6,7 +6,7 @@ import { NoteCreate } from "@/types";
 import Button from "@/components/ui/Button";
 import { Message, MessageType } from "@/components/ui/Message";
 import TagInput from "@/components/ui/TagInput";
-import Tags from "@/components/ui/Tags";
+import { TagItem } from '@/components/ui/TagItem';
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";
@@ -20,11 +20,10 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
     // Define now datetime
     const dtNow = new Date();
     dtNow.setMinutes(dtNow.getMinutes() - dtNow.getTimezoneOffset());
-    const now = dtNow.toISOString().slice(0, 19);
 
     const { createNote } = useNotes();
     const [note, setNote] = useState<NoteCreate>({
-        date: selectedDate || now,
+        date: selectedDate || '',
         content: '',
         tags: [],
     });
@@ -94,7 +93,7 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
 
     function resetNote() {
         setNote({
-            date: now,
+            date: selectedDate || '',
             content: '',
             tags: []
         });
@@ -125,9 +124,11 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
             className="flex flex-col gap-4 bg-stone-900 border border-stone-800 rounded-lg p-4"
             onSubmit={handleSubmit}
         >
-            <div>
-                {/* note selected date : {note.date} */}
-            </div>
+            <span className="flex gap-2">
+            {note.tags?.map((tag) => (
+                <TagItem key={tag} name={tag} />
+            ))}
+            </span>
             <TextArea
                 value={note.content}
                 inputRef={inputRef}
@@ -137,9 +138,6 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
                 value={tagToAdd}
                 onChange={handleTagInputChange}
                 onClick={handleTagInputClick}
-            />
-            <Tags
-                tags={note.tags || []}
             />
             <Button
                 type="submit"

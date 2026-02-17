@@ -24,7 +24,7 @@ export default function Home() {
     }
 
     return (
-        <div className="flex justify-center p-8 gap-4 h-screen overflow-hidden">
+        <div className="flex justify-center p-4 gap-4 h-screen overflow-hidden">
             <div className="flex flex-col w-1/3 gap-4 overflow-y-auto h-full">
                 <NoteForm
                     onCreated={handleRefreshNotesList}

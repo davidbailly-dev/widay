@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/services/api/client';
 
 export const noteService = {
     get: (date) => apiClient(`/api/notes?date=${date}`),

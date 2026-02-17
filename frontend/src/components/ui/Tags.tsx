@@ -1,8 +1,8 @@
-import { IoIosCloseCircle } from 'react-icons/io';
+import { TagItem } from '@/components/ui/TagItem';
 
 interface Props {
     tags: string[]
-};
+}
 
 export default function Tags({ tags }: Props) {
     const handleDeleteTag = (tag: string) => {
@@ -13,19 +13,8 @@ export default function Tags({ tags }: Props) {
         tags.length > 0 &&
         <div className="flex gap-2">
         {tags.map((tag) => (
-            <span
-                key={tag}
-                className="flex items-center bg-orange-500 hover:bg-red-600 rounded-sm px-2 py-1 gap-1 cursor-pointer"
-                onClick={() => handleDeleteTag(tag)}
-            >
-                <span
-                >
-                    {tag}
-                </span>
-                <span>
-                    <IoIosCloseCircle />
-                </span>
-            </span>
+            <span key={tag}>{tag}</span>
+            // <TagItem key={tag} name={tag} />
         ))}
         </div>
     );

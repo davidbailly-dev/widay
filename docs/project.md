@@ -13,7 +13,7 @@ La recherche et la saisie de notes doit être simple et rapide.
 - Pouvoir épingler une note pour la retrouver rapidement.
 - Pouvoir ajouter des tags simplement pour améliorer la recherche de notes.
 - Ajouter un titre à chaque note.
-
+- Ajouter des tags de priorité, cliquer dessus pour les ajouter automatiquement. Chaque tag a une couleur.
 
 # Stack SaaS
 
