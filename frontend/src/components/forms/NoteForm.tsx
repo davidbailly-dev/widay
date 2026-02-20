@@ -121,14 +121,16 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
 
     return (
         <form
-            className="flex flex-col gap-4 bg-stone-900 border border-stone-800 rounded-lg p-4"
+            className="flex flex-col gap-4"
             onSubmit={handleSubmit}
         >
+            {note.tags && note.tags.length > 0 && (
             <span className="flex gap-2">
             {note.tags?.map((tag) => (
                 <TagItem key={tag} name={tag} />
             ))}
             </span>
+            )}
             <TextArea
                 value={note.content}
                 inputRef={inputRef}
