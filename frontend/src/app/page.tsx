@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import NavBar from "@/components/nav/NavBar";
 import Calendar from "@/components/calendar/Calendar";
-import NoteForm from "@/components/forms/NoteForm";
+import NoteForm from "@/components/notes/NoteForm";
 import NotesList from "@/components/notes/NotesList";
 
 export default function Home() {

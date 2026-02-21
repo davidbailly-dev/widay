@@ -1,3 +1,5 @@
+"use client";
+
 import { MdAddCircle, MdCalendarMonth, MdOutlineManageSearch } from "react-icons/md";
 
 import NavItem from "@/components/nav/NavItem";

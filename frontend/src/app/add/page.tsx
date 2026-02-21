@@ -1,6 +1,6 @@
 "use client";
 
-import NoteForm from "@/components/forms/NoteForm";
+import NoteForm from "@/components/notes/NoteForm";
 
 export default function AddPage() {
     const handleOnCreated = () => {
