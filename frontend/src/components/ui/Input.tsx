@@ -19,7 +19,7 @@ export default function Input({
 }: Props) {
     return (
         <input
-            className={`bg-stone-800 p-2 rounded-lg border-0 focus:ring-2 focus:outline-0 focus:ring-stone-600 ${className}`}
+            className={`bg-stone-800 p-2 rounded-lg border-2 border-transparent focus:border-2 focus:border-emerald-700 focus:outline-0 ${className}`}
             ref={inputRef}
             type={type}
             value={value}

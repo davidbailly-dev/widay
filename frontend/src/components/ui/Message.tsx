@@ -1,8 +1,6 @@
-export interface MessageType {
-    content: string,
-    type: 'success' | 'error' | 'warning' | 'neutral',
-    visible: boolean
-}
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp, IoWarningSharp, IoInformationCircleSharp } from "react-icons/io5";
+
+import { MessageType } from "@/types";
 
 const TYPE_CLASSES = {
     success: 'bg-emerald-600',
@@ -11,11 +9,21 @@ const TYPE_CLASSES = {
     neutral: 'bg-stone-500'
 }
 
+const TYPE_ICONS = {
+    success: IoCheckmarkCircleSharp,
+    error: IoCloseCircleSharp,
+    warning: IoWarningSharp,
+    neutral: IoInformationCircleSharp
+}
+
 export function Message({ content, type, visible }: MessageType) {
+    const IconComponent = TYPE_ICONS[type];
+    
     return (
         visible &&
         <div className={`p-4 rounded-md ${TYPE_CLASSES[type]}`}>
-            {content}
+            <IconComponent className="inline-block mr-2 h-6 w-6" />
+            <span>{content}</span>
         </div>
     );
 }

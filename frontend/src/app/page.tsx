@@ -25,21 +25,18 @@ export default function Home() {
     }
 
     return (
-        <div className="flex flex-row">
-            <div className="flex justify-center p-8 gap-4 h-screen overflow-hidden">
-                <div className="flex flex-col w-1/3 gap-4 overflow-y-auto h-full">
-                    <NoteForm
-                        onCreated={handleRefreshNotesList}
-                        selectedDate={selectedDate}
-                    />
-                    <Calendar onSelectedDay={handleSelectedDay} />
-                </div>
-                <div className="flex flex-col w-2/3 overflow-y-auto h-full">
-                    <NotesList
-                        refreshKey={refreshKey}
-                        selectedDate={selectedDate}
-                    />
-                </div>
+        <div className="flex w-full justify-center gap-4">
+            <div className="flex w-1/2 gap-4 overflow-y-auto">
+                <NoteForm
+                    onCreated={handleRefreshNotesList}
+                    selectedDate={selectedDate}
+                />
+            </div>
+            <div className="flex w-1/2">
+                <NotesList
+                    refreshKey={refreshKey}
+                    selectedDate={selectedDate}
+                />
             </div>
         </div>
     );

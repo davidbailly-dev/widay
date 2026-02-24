@@ -17,7 +17,7 @@ export default function Button({
 }: ButtonProps) {
     return (
         <button
-            className={`bg-blue-500 hover:bg-blue-600 border border-white disabled:bg-stone-500 rounded-md p-2 cursor-pointer ${className}`}
+            className={`bg-transparent hover:bg-emerald-700 border-2 border-emerald-700 disabled:bg-stone-500 rounded-md p-2 cursor-pointer ${className}`}
             type={type}
             disabled={disabled}
             onClick={onClick}

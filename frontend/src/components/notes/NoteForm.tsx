@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState, useRef } from "react";
+import { IoCheckmarkCircleSharp } from "react-icons/io5";
 
-import { NoteCreate } from "@/types";
+import { MessageType, NoteCreate } from "@/types";
 import Button from "@/components/ui/Button";
-import { Message, MessageType } from "@/components/ui/Message";
-import TagInput from "@/components/ui/TagInput";
-import { TagItem } from '@/components/ui/TagItem';
+import { Message } from "@/components/ui/Message";
+import TagInput from "@/components/tag/TagInput";
+import { TagItem } from '@/components/tag/TagItem';
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";
@@ -121,7 +122,7 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
 
     return (
         <form
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 w-full"
             onSubmit={handleSubmit}
         >
             {note.tags && note.tags.length > 0 && (
@@ -151,6 +152,7 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
                 type={message.type}
                 visible={message.visible}
             />
+            <div>{selectedDate}</div>
         </form>
     );
 }

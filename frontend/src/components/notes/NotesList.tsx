@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 
+import { NoteSearchInput } from '@/components/notes/NoteSearchInput';
+
 import { useNotes } from '@/hooks/useNotes';
-import { TagItem } from '@/components/ui/TagItem';
+import { TagItem } from '@/components/tag/TagItem';
 
 interface Props {
     refreshKey: number,
@@ -39,18 +41,27 @@ export default function NotesList({
     }
 
     return (
-        <ul className="grid grid-cols-3 gap-4 space-y-4">
-            {notes.map((note) => (
-                <li key={note._id} className="flex flex-col gap-4 h-full border-2 border-stone-800 p-4 rounded-lg">
-                    <span className="flex gap-2">
-                    {note.tags.map((tag) => (
-                        <TagItem key={tag} name={tag} />
+        <div className="flex flex-col w-full gap-4">
+            <div>
+                <NoteSearchInput />
+            </div>
+            <div>
+                <ul className="flex flex-col gap-4 w-full overflow-y-scroll">
+                    {notes.map((note) => (
+                        <li key={note._id} className="grid gap-4 p-3 border-2 border-stone-800 rounded-lg">
+                            <p>{note.date}</p>
+                            {notes && note.tags.length > 0 && (
+                                <span className="flex flex-wrap self-start gap-2">
+                                {note.tags.map((tag) => (
+                                    <TagItem key={tag} name={tag} />
+                                ))}
+                                </span>
+                            )}
+                            <p className="whitespace-pre-line">{note.content}</p>
+                        </li>
                     ))}
-                    </span>
-                    <p>{note.date}</p>
-                    <p className="whitespace-pre-line">{note.content}</p>
-                </li>
-            ))}
-        </ul>
+                </ul>
+            </div>
+        </div>
     );
 }

@@ -7,7 +7,7 @@ interface Params {
 export default function TextArea({ value, inputRef, onChange }: Params) {
     return (
         <textarea
-            className="p-2 bg-stone-800 rounded-lg border-0 focus:ring-2 focus:outline-0 focus:ring-stone-600"
+            className="p-2 bg-stone-800 rounded-lg border-2 border-transparent focus:border-2 focus:border-emerald-700 focus:outline-0"
             ref={inputRef}
             rows={4}
             cols={50}

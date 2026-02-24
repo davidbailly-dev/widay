@@ -1,5 +1,11 @@
 import { IconType } from "react-icons";
 
+export interface MessageType {
+    content: string,
+    type: 'success' | 'error' | 'warning' | 'neutral',
+    visible: boolean,
+}
+
 export interface NavItemType {
     label: string,
     href: string,
