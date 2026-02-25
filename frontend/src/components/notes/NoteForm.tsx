@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
 import { useEffect, useState, useRef } from "react";
-import { IoCheckmarkCircleSharp } from "react-icons/io5";
 
 import { MessageType, NoteCreate } from "@/types";
 import Button from "@/components/ui/Button";
@@ -22,18 +21,26 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
     const dtNow = new Date();
     dtNow.setMinutes(dtNow.getMinutes() - dtNow.getTimezoneOffset());
 
+    // Function that push request to note backend API
     const { createNote } = useNotes();
+
+    // Note to be added
     const [note, setNote] = useState<NoteCreate>({
         date: selectedDate || '',
         content: '',
         tags: [],
     });
+
+    // The tag that the user is inputing before adding it
     const [tagToAdd, setTagToAdd] = useState('');
+
+    // Message content
     const [message, setMessage] = useState<MessageType>({
         content: '',
         type: 'neutral',
         visible: false
     });
+    
     const [loading, setLoading] = useState(false);
 
     // Used to focus to input after submiting a note
@@ -46,12 +53,14 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
         }
     }, [message]);
 
+    // Set the note date when it changes
     useEffect(() => {
         if (selectedDate) {
             setNote({...note, date: selectedDate});
         }
     }, [selectedDate]);
 
+    // Handle the form submit to create the note request to API
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -84,6 +93,7 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
         }
     }
 
+    // Reset info message for user
     function resetMessage() {
         setMessage({
             content: '',
@@ -92,6 +102,7 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
         })
     }
 
+    // Reset note fields
     function resetNote() {
         setNote({
             date: selectedDate || '',
@@ -100,6 +111,7 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
         });
     }
 
+    // Reset info message and handle note content changes
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setMessage({
             content: '',
@@ -109,10 +121,12 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
         setNote({ ... note, content: e.target.value });
     }
 
+    // Set the current tag that the user is typing
     const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTagToAdd(e.target.value.trim());
     }
 
+    // Add the tag to the note tags list
     const handleTagInputClick = () => {
         if (tagToAdd) {
             setNote({ ...note, tags: [...(note.tags || []), tagToAdd] });

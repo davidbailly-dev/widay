@@ -21,6 +21,9 @@ const noteSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-noteSchema.index({ tags: 1 });
+noteSchema.index({ content: 1 }, { name: 'content_idx' });
+noteSchema.index({ tags: 1 }, { name: 'tags_idx' });
+noteSchema.index({ content: "text", tags: "text" }, { name: 'text_search_idx' });
+noteSchema.index({ date: 1, content: "text", tags: "text" }, { name: 'date_text_idx' });
 
 module.exports = mongoose.model('Note', noteSchema);

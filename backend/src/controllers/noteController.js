@@ -3,29 +3,46 @@ const Note = require('../models/Note');
 // Get all notes
 exports.getNotes = async (req, res, next) => {
     try {
-        const { dateStart, dateEnd, limit } = req.query;
-        const query = {};
+        const { dateStart, dateEnd, limit, search } = req.query;
+        const baseQuery = {};
 
         if (dateStart && dateEnd) {
-            query.date = {
-                $gte: dateStart,
-                $lte: dateEnd
-            };
+            baseQuery.date = { $gte: dateStart, $lte: dateEnd };
         }
 
-        const notes = await Note
-            .find(query)
-            .sort({ createdAt: -1 })
-            .limit(limit ? Number(limit) : 0);
+        let notes;
+
+        if (search && search.length >= 2) {
+            const regex = new RegExp(search, 'i'); // Permit partial search
+
+            notes = await Note
+                .find({
+                    $or: [
+                        { $text: { $search: search } },
+                        {
+                            $or: [
+                                { content: regex },
+                                { tags: regex }
+                            ]
+                        }
+                    ],
+                    ...baseQuery
+                })
+                .sort({
+                    score: { $meta: "textScore" },
+                    createdAt: -1
+                })
+                .select({ score: { $meta: "textScore" } })
+                .limit(Number(limit) || 20);
+        } else {
+            notes = await Note
+                .find(baseQuery)
+                .sort({ createdAt: -1 })
+                .limit(Number(limit) || 20)
+        }
 
         // Force delay for tests
         // await new Promise(resolve => setTimeout(resolve, 1500));
-
-        console.log('Query:', JSON.stringify(query, null, 2));
-        console.log('dateStart parsed:', new Date(dateStart));
-        console.log('dateEnd parsed:', new Date(dateEnd));
-        console.log('Nombre total notes:', await Note.countDocuments());
-        console.log('Notes dans la plage (sans limit):', await Note.countDocuments(query));
 
         res.json({
             success: true,
