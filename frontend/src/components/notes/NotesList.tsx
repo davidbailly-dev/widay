@@ -20,7 +20,7 @@ export default function NotesList({
     const { notes, getNotes, loading } = useNotes();
 
     useEffect(() => {
-        getNotes(selectedDate);
+        getNotes('', '', 3);
         console.log('refreshing notes list with date', selectedDate);
     }, [refreshKey]);
 

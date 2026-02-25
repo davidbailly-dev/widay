@@ -3,25 +3,35 @@ const Note = require('../models/Note');
 // Get all notes
 exports.getNotes = async (req, res, next) => {
     try {
-        const { date } = req.query;
-        let notes;
+        const { dateStart, dateEnd, limit } = req.query;
+        const query = {};
 
-        if (date) {
-            notes = await Note.find({ date }).sort({createdAt: -1});
-        } else {
-            notes = await Note.find().sort({createdAt: -1});
+        if (dateStart && dateEnd) {
+            query.date = {
+                $gte: dateStart,
+                $lte: dateEnd
+            };
         }
+
+        const notes = await Note
+            .find(query)
+            .sort({ createdAt: -1 })
+            .limit(limit ? Number(limit) : 0);
 
         // Force delay for tests
         // await new Promise(resolve => setTimeout(resolve, 1500));
 
+        console.log('Query:', JSON.stringify(query, null, 2));
+        console.log('dateStart parsed:', new Date(dateStart));
+        console.log('dateEnd parsed:', new Date(dateEnd));
+        console.log('Nombre total notes:', await Note.countDocuments());
+        console.log('Notes dans la plage (sans limit):', await Note.countDocuments(query));
+
         res.json({
             success: true,
             message: 'Found notes',
-            data: {
-                notes
-            }
-        })
+            data: { notes}
+        });
     } catch (err) {
         next(err);
     }

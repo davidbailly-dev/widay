@@ -7,10 +7,10 @@ export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const getNotes = async (date?: string) => {
+    const getNotes = async (dateStart?: string, dateEnd?: string, limit?: number) => {
         try {
             setLoading(true);
-            const notes = await noteService.get(date);
+            const notes = await noteService.get(dateStart, dateEnd, limit);
             setNotes(notes.data.notes);
 
             return notes.data.notes;
