@@ -16,7 +16,7 @@ const TYPE_ICONS = {
     neutral: IoInformationCircleSharp
 }
 
-export function Message({ content, type, visible }: MessageType) {
+export default function Message({ content, type, visible }: MessageType) {
     const IconComponent = TYPE_ICONS[type];
     
     return (

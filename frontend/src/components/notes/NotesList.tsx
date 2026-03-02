@@ -6,7 +6,7 @@ import { CgSpinner } from 'react-icons/cg';
 import { NoteSearchInput } from '@/components/notes/NoteSearchInput';
 
 import { useNotes } from '@/hooks/useNotes';
-import { TagItem } from '@/components/tag/TagItem';
+import TagItem from '@/components/tag/TagItem';
 
 interface Props {
     refreshKey: number,

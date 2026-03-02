@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+
+import { getISODate } from "@/utils/date";
 
 interface Props {
     className?: string;
@@ -191,18 +193,4 @@ function getWeeksInMonth(year: number, month: number) {
     lastWeek.days.push(...missingDays);
 
     return weeks;
-}
-
-/**
- * Format a Date in ISO format
- * 
- * @param date 
- * @returns 
- */
-function getISODate(date: Date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
 }

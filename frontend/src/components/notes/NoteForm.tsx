@@ -4,35 +4,37 @@ import { useEffect, useState, useRef } from "react";
 
 import { MessageType, NoteCreate } from "@/types";
 import Button from "@/components/ui/Button";
-import { Message } from "@/components/ui/Message";
+import InputDate from "@/components/ui/InputDate";
+import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
-import { TagItem } from '@/components/tag/TagItem';
+import TagItem from '@/components/tag/TagItem';
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";
+import { getISODate } from "@/utils/date";
 
 interface Props {
-    selectedDate?: string;
     onCreated: (created: boolean) => void;
 }
 
-export default function NoteForm({ selectedDate, onCreated }: Props) {
+export default function NoteForm({ onCreated }: Props) {
+    const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
+
     // Define now datetime
-    const dtNow = new Date();
-    dtNow.setMinutes(dtNow.getMinutes() - dtNow.getTimezoneOffset());
+    const today = new Date();
+    const defaultDate = getISODate(today);
+
+    const [selectedDate, setSelectedDate] = useState(defaultDate); // The date of the note to create
 
     // Function that push request to note backend API
     const { createNote } = useNotes();
 
     // Note to be added
     const [note, setNote] = useState<NoteCreate>({
-        date: selectedDate || '',
+        date: selectedDate,
         content: '',
         tags: [],
     });
-
-    // The tag that the user is inputing before adding it
-    const [tagToAdd, setTagToAdd] = useState('');
 
     // Message content
     const [message, setMessage] = useState<MessageType>({
@@ -134,6 +136,10 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
         }
     }
 
+    const handleNoteFormDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedDate(e.target.value);
+    }
+
     return (
         <form
             className="flex flex-col gap-4 w-full"
@@ -146,6 +152,10 @@ export default function NoteForm({ selectedDate, onCreated }: Props) {
             ))}
             </span>
             )}
+            <InputDate
+                value={selectedDate}
+                onChange={handleNoteFormDateChange}
+            />
             <TextArea
                 value={note.content}
                 inputRef={inputRef}
