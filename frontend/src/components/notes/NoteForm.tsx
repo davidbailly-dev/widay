@@ -152,10 +152,6 @@ export default function NoteForm({ onCreated }: Props) {
             ))}
             </span>
             )}
-            <InputDate
-                value={selectedDate}
-                onChange={handleNoteFormDateChange}
-            />
             <TextArea
                 value={note.content}
                 inputRef={inputRef}
@@ -166,11 +162,18 @@ export default function NoteForm({ onCreated }: Props) {
                 onChange={handleTagInputChange}
                 onClick={handleTagInputClick}
             />
-            <Button
-                type="submit"
-                label="Ajouter"
-                disabled={loading}
-            />
+            <span className="flex gap-4">
+                <InputDate
+                    className="flex-1"
+                    value={selectedDate}
+                    onChange={handleNoteFormDateChange}
+                />
+                <Button
+                    type="submit"
+                    label="Créer la note"
+                    disabled={loading}
+                />
+            </span>
             <Message
                 content={message.content}
                 type={message.type}
