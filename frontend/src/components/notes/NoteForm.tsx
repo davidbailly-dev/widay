@@ -14,10 +14,11 @@ import { useNotes } from "@/hooks/useNotes";
 import { getISODate } from "@/utils/date";
 
 interface Props {
+    className?: string;
     onCreated: (created: boolean) => void;
 }
 
-export default function NoteForm({ onCreated }: Props) {
+export default function NoteForm({ className, onCreated }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
 
     // Define now datetime
@@ -142,7 +143,7 @@ export default function NoteForm({ onCreated }: Props) {
 
     return (
         <form
-            className="flex flex-col gap-4 w-full"
+            className={`flex flex-col gap-4 w-full ${className}`}
             onSubmit={handleSubmit}
         >
             {note.tags && note.tags.length > 0 && (
@@ -157,23 +158,24 @@ export default function NoteForm({ onCreated }: Props) {
                 inputRef={inputRef}
                 onChange={(e) => {handleContentChange(e)}}
             />
-            <TagInput
-                value={tagToAdd}
-                onChange={handleTagInputChange}
-                onClick={handleTagInputClick}
-            />
-            <span className="flex gap-4">
+            <span className="flex flex-row gap-4 w-full">
                 <InputDate
                     className="flex-1"
                     value={selectedDate}
                     onChange={handleNoteFormDateChange}
                 />
-                <Button
-                    type="submit"
-                    label="Créer la note"
-                    disabled={loading}
+                <TagInput
+                    className="flex-2"
+                    value={tagToAdd}
+                    onChange={handleTagInputChange}
+                    onClick={handleTagInputClick}
                 />
             </span>
+            <Button
+                type="submit"
+                label="Créer la note"
+                disabled={loading}
+            />
             <Message
                 content={message.content}
                 type={message.type}

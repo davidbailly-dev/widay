@@ -5,11 +5,12 @@ import Input from '@/components/ui/Input';
 
 interface Props {
     value?: string,
+    className?: string,
     onChange?: React.ChangeEventHandler<HTMLInputElement>,
     onClick?: React.MouseEventHandler<HTMLButtonElement>,
 }
 
-export default function TagInput({ value, onChange, onClick }: Props) {
+export default function TagInput({ value, className, onChange, onClick }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Focus on input after clicking on add button
@@ -20,9 +21,9 @@ export default function TagInput({ value, onChange, onClick }: Props) {
     }
 
     return (
-        <span className="flex gap-4">
+        <span className={`flex gap-4 ${className}`}>
             <Input
-                className='flex-4'
+                className="flex-2"
                 inputRef={inputRef}
                 type="text"
                 placeHolder='Nom du tag...'
@@ -30,7 +31,7 @@ export default function TagInput({ value, onChange, onClick }: Props) {
                 onChange={onChange}
             />
             <Button
-                className='flex-1'
+                className="flex-1"
                 type="button"
                 label="Ajouter tag"
                 onClick={(e) => {

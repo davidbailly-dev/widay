@@ -32,11 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
       >
-        <div>
-          <ToolBar />
-        </div>
-
-        <main className="flex w-full bg-stone-950 p-4">
+        <main className="flex w-full bg-black">
           {children}
         </main>
       </body>
