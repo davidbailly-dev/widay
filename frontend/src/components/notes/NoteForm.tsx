@@ -179,7 +179,6 @@ export default function NoteForm({ onCreated }: Props) {
                 type={message.type}
                 visible={message.visible}
             />
-            <div>{selectedDate}</div>
         </form>
     );
 }

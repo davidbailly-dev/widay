@@ -21,13 +21,13 @@ export default function Home() {
     }
 
     return (
-        <div className="flex w-full justify-center gap-4">
-            <div className="flex w-1/2 gap-4">
+        <div className="flex flex-col lg:flex-row w-full justify-center gap-4">
+            <div className="flex gap-4">
                 <NoteForm
                     onCreated={handleRefreshNotesList}
                 />
             </div>
-            <div className="flex flex-col w-1/2 gap-4">
+            <div className="flex flex-col gap-4 w-full">
                 <NoteSearchInput
                     onChange={handleSearch}
                 />
