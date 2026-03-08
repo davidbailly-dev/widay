@@ -13,6 +13,8 @@ import TextArea from "@/components/ui/TextArea";
 import { useNotes } from "@/hooks/useNotes";
 import { getISODate } from "@/utils/date";
 
+const TAGS_LIMIT_PER_NOTE = 5;
+
 interface Props {
     className?: string;
     onCreated: (created: boolean) => void;
@@ -131,7 +133,15 @@ export default function NoteForm({ className, onCreated }: Props) {
 
     // Add the tag to the note tags list
     const handleTagInputClick = () => {
+        const countTagsAdded = note.tags?.length || 0;
+
+        // Limits the number of tags for a note
+        if (countTagsAdded >= TAGS_LIMIT_PER_NOTE) {
+            return;
+        }
+
         if (tagToAdd) {
+            // Add the tag to the note tags
             setNote({ ...note, tags: [...(note.tags || []), tagToAdd] });
             setTagToAdd('');
         }
