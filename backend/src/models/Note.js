@@ -11,7 +11,11 @@ const noteSchema = new mongoose.Schema({
         maxlength: 1000,
     },
     tags: {
-        type: [String],
+        type: [{
+            key: { type: String, required: true},
+            label: { type: String, required: true}
+        }],
+        default: [],
         validate: {
             validator: function(v) {
                 return v.length <= 5
@@ -21,9 +25,7 @@ const noteSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-noteSchema.index({ content: 1 }, { name: 'content_idx' });
-noteSchema.index({ tags: 1 }, { name: 'tags_idx' });
-noteSchema.index({ content: "text", tags: "text" }, { name: 'text_search_idx' });
-noteSchema.index({ date: 1, content: "text", tags: "text" }, { name: 'date_text_idx' });
+noteSchema.index({ content: "text", 'tags.label': "text" }, { name: 'text_search_idx' });
+noteSchema.index({ date: 1 }, { name: 'date_text_idx' });
 
 module.exports = mongoose.model('Note', noteSchema);

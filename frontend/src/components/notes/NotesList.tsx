@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 
-import { NoteSearchInput } from '@/components/notes/NoteSearchInput';
-
 import { useNotes } from '@/hooks/useNotes';
 import TagItem from '@/components/tag/TagItem';
 
@@ -62,7 +60,7 @@ export default function NotesList({
                     {notes && note.tags.length > 0 && (
                         <span className="flex flex-wrap self-start gap-2">
                         {note.tags.map((tag) => (
-                            <TagItem key={tag} name={tag} />
+                            <TagItem key={tag.key} name={tag.label} />
                         ))}
                         </span>
                     )}

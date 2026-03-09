@@ -16,7 +16,12 @@ export interface Note {
     _id: string,
     date: string,
     content: string,
-    tags: string[],
+    tags: Tag[]
+}
+
+export interface Tag {
+    key: string,
+    label: string
 }
 
 export interface NoteCreate {
