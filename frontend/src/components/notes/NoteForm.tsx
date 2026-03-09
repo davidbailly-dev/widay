@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 
-import { MessageType, NoteCreate } from "@/types";
+import { MessageType, Note } from "@/types";
 import Button from "@/components/ui/Button";
 import InputDate from "@/components/ui/InputDate";
 import Message from "@/components/ui/Message";
@@ -33,7 +33,7 @@ export default function NoteForm({ className, onCreated }: Props) {
     const { createNote } = useNotes();
 
     // Note to be added
-    const [note, setNote] = useState<NoteCreate>({
+    const [note, setNote] = useState<Note>({
         date: selectedDate,
         content: '',
         tags: [],
@@ -126,6 +126,13 @@ export default function NoteForm({ className, onCreated }: Props) {
         setNote({ ... note, content: e.target.value });
     }
 
+    const handleDeleteTag = (key: string) => {
+        setNote({
+            ...note,
+            tags: note.tags?.filter((tag) => tag.key !== key)
+        });
+    }
+
     // Set the current tag that the user is typing
     const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTagToAdd(e.target.value.trim());
@@ -140,9 +147,19 @@ export default function NoteForm({ className, onCreated }: Props) {
             return;
         }
 
+        const tagKey = crypto.randomUUID();
+
         if (tagToAdd) {
             // Add the tag to the note tags
-            setNote({ ...note, tags: [...(note.tags || []), tagToAdd] });
+            setNote({
+                ...note,
+                tags: [
+                    ...(note.tags),
+                    {
+                        key: tagKey,
+                        label: tagToAdd
+                    }
+                ]});
             setTagToAdd('');
         }
     }
@@ -159,7 +176,12 @@ export default function NoteForm({ className, onCreated }: Props) {
             {note.tags && note.tags.length > 0 && (
             <span className="flex gap-2">
             {note.tags?.map((tag) => (
-                <TagItem key={tag} name={tag} />
+                <TagItem
+                    key={tag.key}
+                    name={tag.label}
+                    onClick={(e) => {
+                        handleDeleteTag(tag.key);
+                    }} />
             ))}
             </span>
             )}

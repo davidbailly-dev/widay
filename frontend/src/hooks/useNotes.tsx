@@ -22,7 +22,7 @@ export const useNotes = () => {
         }
     };
 
-    const createNote = async (data: NoteCreate) => {
+    const createNote = async (data: Note) => {
         try {
             const newNote = await noteService.create(data);
             await getNotes();
