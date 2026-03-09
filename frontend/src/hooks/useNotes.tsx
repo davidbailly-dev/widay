@@ -1,4 +1,4 @@
-import { Note, NoteCreate } from '@/types';
+import { Note } from '@/types';
 
 import { noteService } from '@/services/api/note.service';
 import { useState } from 'react';
