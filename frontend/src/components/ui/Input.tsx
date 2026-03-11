@@ -5,6 +5,7 @@ interface Props {
     type?: string,
     value?: string,
     placeHolder?: string,
+    disabled?: boolean,
     inputRef?: React.Ref<HTMLInputElement>,
     onChange?: React.ChangeEventHandler<HTMLInputElement>
 }
@@ -14,6 +15,7 @@ export default function Input({
     type = "text",
     value,
     placeHolder='',
+    disabled=false,
     inputRef,
     onChange
 }: Props) {
@@ -24,6 +26,7 @@ export default function Input({
             type={type}
             value={value}
             placeholder={placeHolder}
+            disabled={disabled}
             onChange={onChange}
         />
     )

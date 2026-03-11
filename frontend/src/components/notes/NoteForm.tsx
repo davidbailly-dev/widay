@@ -22,6 +22,7 @@ interface Props {
 
 export default function NoteForm({ className, onCreated }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
+    const [disabledTagInput, setDisabledTagInput] = useState(false);
 
     // Define now datetime
     const today = new Date();
@@ -131,6 +132,12 @@ export default function NoteForm({ className, onCreated }: Props) {
             ...note,
             tags: note.tags?.filter((tag) => tag.key !== key)
         });
+
+        const countTagsAdded = note.tags?.length || 0;
+
+        if (countTagsAdded <= TAGS_LIMIT_PER_NOTE) {
+            setDisabledTagInput(false);
+        }
     }
 
     // Set the current tag that the user is typing
@@ -144,6 +151,7 @@ export default function NoteForm({ className, onCreated }: Props) {
 
         // Limits the number of tags for a note
         if (countTagsAdded >= TAGS_LIMIT_PER_NOTE) {
+            setDisabledTagInput(true);
             return;
         }
 
@@ -161,6 +169,10 @@ export default function NoteForm({ className, onCreated }: Props) {
                     }
                 ]});
             setTagToAdd('');
+
+            if (countTagsAdded + 1 >= TAGS_LIMIT_PER_NOTE) {
+                setDisabledTagInput(true);
+            }
         }
     }
 
@@ -199,6 +211,7 @@ export default function NoteForm({ className, onCreated }: Props) {
                 <TagInput
                     className="flex-2"
                     value={tagToAdd}
+                    disabled={disabledTagInput}
                     onChange={handleTagInputChange}
                     onClick={handleTagInputClick}
                 />
