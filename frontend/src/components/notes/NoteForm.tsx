@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import InputDate from "@/components/ui/InputDate";
 import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
-import TagItem from '@/components/tag/TagItem';
+import { TagItem } from '@/components/tag/TagItem';
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";

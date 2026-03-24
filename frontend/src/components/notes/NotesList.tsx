@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { CgSpinner } from 'react-icons/cg';
+import { useEffect } from "react";
+import { CgSpinner } from "react-icons/cg";
 
-import { useNotes } from '@/hooks/useNotes';
-import TagItem from '@/components/tag/TagItem';
+import { useNotes } from "@/hooks/useNotes";
+import { NoteCard } from "@/components/notes/NoteCard";
 
 interface Props {
     refreshKey: number,
@@ -55,17 +55,13 @@ export default function NotesList({
     return (
         <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
             {notes.map((note) => (
-                <li key={note._id} className="grid gap-4 p-3 border-2 border-stone-800 rounded-lg">
-                    <p>{note.date}</p>
-                    {notes && note.tags.length > 0 && (
-                        <span className="flex flex-wrap self-start gap-2">
-                        {note.tags.map((tag) => (
-                            <TagItem key={tag.key} name={tag.label} />
-                        ))}
-                        </span>
-                    )}
-                    <p className="whitespace-pre-line">{note.content}</p>
-                </li>
+                <NoteCard
+                    key={note._id}
+                    _id={note._id}
+                    date={note.date}
+                    content={note.content}
+                    tags={note.tags}
+                />
             ))}
         </ul>
     );
