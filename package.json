@@ -1,0 +1,12 @@
+{
+    "name": "widay",
+    "private": true,
+    "scripts": {
+        "dev:backend": "npm run dev --prefix backend",
+        "dev:frontend": "npm run dev --prefix frontend",
+        "build:frontend": "npm run build --prefix frontend",
+        "start:backend": "npm run start --prefix backend",
+        "start:frontend": "npm run start --prefix frontend",
+        "test:backend": "npm run test --prefix backend"
+    }
+}

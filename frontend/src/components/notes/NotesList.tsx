@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 
 import { useNotes } from '@/hooks/useNotes';
@@ -32,7 +32,7 @@ export default function NotesList({
         }
 
         getNotes(dateStart, dateEnd, limit, validatedSearch);
-    }, [refreshKey, search]);
+    }, [dateStart, dateEnd, getNotes, limit, refreshKey, search]);
 
     // If notes data are loading
     if (loading) {

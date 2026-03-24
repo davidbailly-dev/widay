@@ -15,7 +15,7 @@ export default function TagInput({ value, className, disabled, onChange, onClick
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Focus on input after clicking on add button
-    const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleOnClick = () => {
         if (inputRef && inputRef.current) {
             inputRef.current.focus();
         }
@@ -39,7 +39,7 @@ export default function TagInput({ value, className, disabled, onChange, onClick
                 disabled={disabled}
                 onClick={(e) => {
                     onClick?.(e);
-                    handleOnClick(e);
+                    handleOnClick();
                 }}
             />
         </span>

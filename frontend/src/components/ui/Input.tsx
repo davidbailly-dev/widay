@@ -1,5 +1,3 @@
-import { useRef } from 'react';
-
 interface Props {
     className?: string,
     type?: string,

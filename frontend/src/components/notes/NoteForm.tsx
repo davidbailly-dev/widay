@@ -61,9 +61,11 @@ export default function NoteForm({ className, onCreated }: Props) {
 
     // Set the note date when it changes
     useEffect(() => {
-        if (selectedDate) {
-            setNote({...note, date: selectedDate});
-        }
+        if (!selectedDate) return;
+
+        setNote((prev) =>
+            prev.date === selectedDate ? prev : {...prev, date: selectedDate}
+        );
     }, [selectedDate]);
 
     // Handle the form submit to create the note request to API
@@ -191,7 +193,7 @@ export default function NoteForm({ className, onCreated }: Props) {
                 <TagItem
                     key={tag.key}
                     name={tag.label}
-                    onClick={(e) => {
+                    onClick={() => {
                         handleDeleteTag(tag.key);
                     }} />
             ))}

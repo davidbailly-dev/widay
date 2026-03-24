@@ -1,6 +1,14 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const noteSchema = new mongoose.Schema({
+import type { Tag } from "../types/note";
+
+interface NoteDoc {
+    date: string,
+    content: string,
+    tags?: Tag[]
+}
+
+const noteSchema = new mongoose.Schema<NoteDoc>({
     date: {
         type: String,
         required: true,
@@ -17,7 +25,7 @@ const noteSchema = new mongoose.Schema({
         }],
         default: [],
         validate: {
-            validator: function(v) {
+            validator: function(v: Tag[]) {
                 return v.length <= 5
             },
             message: 'Max 5 tags can be added to a note'
@@ -28,4 +36,4 @@ const noteSchema = new mongoose.Schema({
 noteSchema.index({ content: "text", 'tags.label': "text" }, { name: 'text_search_idx' });
 noteSchema.index({ date: 1 }, { name: 'date_text_idx' });
 
-module.exports = mongoose.model('Note', noteSchema);
+export default mongoose.model('Note', noteSchema);
