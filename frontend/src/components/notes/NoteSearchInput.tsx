@@ -4,7 +4,7 @@ interface Props {
     onChange?: React.ChangeEventHandler<HTMLInputElement>,
 }
 
-export function NoteSearchInput({ onChange }: Props) {
+export default function NoteSearchInput({ onChange }: Props) {
     return (
         <Input
             className="w-full"

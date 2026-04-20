@@ -6,12 +6,18 @@ import { CgSpinner } from "react-icons/cg";
 import { useNotes } from "@/hooks/useNotes";
 import { NoteCard } from "@/components/notes/NoteCard";
 
+import type { Note } from "@/types";
+
 interface Props {
     refreshKey: number,
     dateStart?: string,
     dateEnd?: string,
     limit?: number,
-    search?: string
+    loading: boolean,
+    notes: Note[],
+    search?: string,
+    selectedNote?: Note,
+    setSelectedNote: (note: Note) => void
 };
 
 export default function NotesList({
@@ -19,20 +25,15 @@ export default function NotesList({
     dateStart = '',
     dateEnd = '',
     limit = 10,
-    search = ''
+    loading,
+    notes,
+    search = '',
+    selectedNote,
+    setSelectedNote,
 }: Props) {
-    const { notes, getNotes, loading } = useNotes();
-
-    // Fetch requested notes
-    useEffect(() => {
-        let validatedSearch = '';
-
-        if (search.length >= 2) {
-            validatedSearch = search;
-        }
-
-        getNotes(dateStart, dateEnd, limit, validatedSearch);
-    }, [dateStart, dateEnd, getNotes, limit, refreshKey, search]);
+    function handleSelectedNoteCard(note: Note) {
+        setSelectedNote(note);
+    }
 
     // If notes data are loading
     if (loading) {
@@ -44,7 +45,7 @@ export default function NotesList({
     }
 
     // If no notes data found
-    if (notes.length === 0) {
+    if (!notes || notes.length === 0) {
         return (
             <div className="flex justify-center items-center h-full">
                 <p className="text-stone-500">No notes found for this date.</p>
@@ -57,10 +58,9 @@ export default function NotesList({
             {notes.map((note) => (
                 <NoteCard
                     key={note._id}
-                    _id={note._id}
-                    date={note.date}
-                    content={note.content}
-                    tags={note.tags}
+                    note={note}
+                    selected={selectedNote?._id === note._id ? true : false}
+                    onClick={() => handleSelectedNoteCard(note)}
                 />
             ))}
         </ul>

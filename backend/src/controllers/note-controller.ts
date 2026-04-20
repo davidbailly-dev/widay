@@ -44,7 +44,7 @@ export const createNote = async (
     }
 };
 
-// Delete a note (correction du message)
+// Delete a note
 export const deleteNote = async (
     req: Request,
     res: Response,
@@ -127,6 +127,48 @@ export const getNotes = async (
             success: true,
             message: 'Found notes',
             data: { notes }
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**
+ * Update a note
+ */
+export const updateNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id } = req.params;
+        const { date, content, tags } = req.body;
+        const updated = await Note.findByIdAndUpdate(
+            id,
+            {
+                ...(date !== undefined && { date }),
+                ...(content !== undefined &&  { content }),
+                ...(tags !== undefined && { tags }),
+            },
+            {
+                returnDocument: "after",
+                runValidators: true,
+            }
+        );
+
+        if (!updated) {
+            return res.status(404).json({
+                success: false,
+                code: "NOTE_NOT_FOUND",
+                message: "Note not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Note updated sucessfully",
+            data: { note: updated },
         });
     } catch (err) {
         next(err);

@@ -17,10 +17,17 @@ const TAGS_LIMIT_PER_NOTE = 5;
 
 interface Props {
     className?: string;
+    selectedNote?: Note,
+    editMode?: 'add' | 'update',
     onCreated: (created: boolean) => void;
 }
 
-export default function NoteForm({ className, onCreated }: Props) {
+export default function NoteForm({
+    className,
+    onCreated,
+    editMode = 'add',
+    selectedNote
+}: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
     const [disabledTagInput, setDisabledTagInput] = useState(false);
 
@@ -31,10 +38,10 @@ export default function NoteForm({ className, onCreated }: Props) {
     const [selectedDate, setSelectedDate] = useState(defaultDate); // The date of the note to create
 
     // Function that push request to note backend API
-    const { createNote } = useNotes();
+    const { createNote, updateNote } = useNotes();
 
-    // Note to be added
-    const [note, setNote] = useState<Note>({
+    // Set selected note or empty note
+    const [note, setNote] = useState<Note>(selectedNote || {
         date: selectedDate,
         content: '',
         tags: [],
@@ -68,6 +75,12 @@ export default function NoteForm({ className, onCreated }: Props) {
         );
     }, [selectedDate]);
 
+    useEffect(() => {
+        if (!selectedNote) return;
+
+        setNote(selectedNote);
+    }, [selectedNote]);
+
     // Handle the form submit to create the note request to API
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -76,16 +89,27 @@ export default function NoteForm({ className, onCreated }: Props) {
         resetMessage();
 
         try {
-            const res = await createNote(note);
-            
+            if (editMode == 'update' && !note._id) {
+                throw new Error("Impossible de modifier une note sans identifiant.");
+            }
+
+            const res = editMode == 'add' ? await createNote(note) : await updateNote(note._id!, note);
+
+            if (!res) {
+                throw new Error("La requête de mise à jour a échoué.");
+            }
+
             if (res.success) {
                 setMessage({
-                    content: 'Note ajoutée avec succès !',
+                    content: editMode == 'add' ? "Note ajoutée avec succès !" : "Note modifiée avec succès !",
                     type: 'success',
                     visible: true
                 });
-                resetNote();
-                onCreated(true);
+
+                if (editMode == 'add') {
+                    onCreated(true);
+                    resetNote();
+                }
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
@@ -182,6 +206,15 @@ export default function NoteForm({ className, onCreated }: Props) {
         setSelectedDate(e.target.value);
     }
 
+    const handleResetNote = () => {
+        resetNote();
+        setMessage({
+            content: "",
+            type: "neutral",
+            visible: false
+        });
+    }
+
     return (
         <form
             className={`flex flex-col gap-4 w-full ${className}`}
@@ -207,7 +240,7 @@ export default function NoteForm({ className, onCreated }: Props) {
             <span className="flex flex-row gap-4 w-full">
                 <InputDate
                     className="flex-1"
-                    value={selectedDate}
+                    value={note.date ? note.date : selectedDate}
                     onChange={handleNoteFormDateChange}
                 />
                 <TagInput
@@ -218,11 +251,21 @@ export default function NoteForm({ className, onCreated }: Props) {
                     onClick={handleTagInputClick}
                 />
             </span>
-            <Button
-                type="submit"
-                label="Créer la note"
-                disabled={loading}
-            />
+            <span className="flex gap-4">
+                <Button
+                    className="flex-1"
+                    type="submit"
+                    label={editMode == 'add' ? "Ajouter" : "Modifier"}
+                    disabled={loading}
+                />
+                <Button
+                    className="flex-1"
+                    secondary={true}
+                    type="button"
+                    label="Annuler"
+                    onClick={handleResetNote}
+                />
+            </span>
             <Message
                 content={message.content}
                 type={message.type}

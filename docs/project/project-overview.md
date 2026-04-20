@@ -6,13 +6,16 @@
 
 ## Goal
 Tenir un journal simple d'une journée de travail ou de vie personnelle et pouvoir rechercher des notes ou des tâches réalisées.
-La recherche et la saisie de notes doit être simple et rapide.
 
 ## Features
-- Pouvoir épingler une note pour la retrouver rapidement.
-- Pouvoir ajouter des tags simplement pour améliorer la recherche de notes.
-- Ajouter un titre à chaque note.
-- Ajouter des tags de priorité, cliquer dessus pour les ajouter automatiquement. Chaque tag a une couleur.
+- Créer une nouvelle note
+- Ajouter des tags à une note
+- Modifier une note
+- Supprimer une note
+- Rechercher des notes par contenu et tags
+
+## Contraintes
+- La recherche et la saisie de notes doit être simple et rapide
 
 ## Entities
 ### Tasks
@@ -54,8 +57,8 @@ La recherche et la saisie de notes doit être simple et rapide.
 
 ## Deployment
 - `backend` -> Render
-- `frontend` -> Vercel
-- database -> MongoDB Atlas
+- `frontend` -> Render
+- `database` -> MongoDB Atlas
 
 ## Code Validation
 - Le code doit toujours être validé par eslint
