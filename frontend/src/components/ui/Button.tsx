@@ -1,21 +1,22 @@
 import React from 'react';
 
 interface ButtonProps {
-    className?: string,
-    disabled?: boolean,
-    label?: string,
-    secondary?: boolean,
-    type?: 'button' | 'submit' | 'reset',
-    onClick?: React.MouseEventHandler<HTMLButtonElement>
+    className?: string;
+    disabled?: boolean;
+    label?: string;
+    secondary?: boolean;
+    type?: 'button' | 'submit' | 'reset';
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    children?: string;
 }
 
 export default function Button({
     className = '',
     disabled = false,
-    label = 'Label',
     secondary = false,
     type = 'button',
-    onClick
+    onClick,
+    children
 }: ButtonProps) {
     return (
         <button
@@ -24,7 +25,7 @@ export default function Button({
             disabled={disabled}
             onClick={onClick}
         >
-            {label}
+            {children}
         </button>
     );
 }

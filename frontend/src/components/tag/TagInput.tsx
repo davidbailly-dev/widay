@@ -27,7 +27,7 @@ export default function TagInput({ value, className, disabled, onChange, onClick
                 className="flex-2 disabled:opacity-50"
                 inputRef={inputRef}
                 type="text"
-                placeHolder='Nom du tag...'
+                placeholder='Nom du tag...'
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
@@ -35,13 +35,14 @@ export default function TagInput({ value, className, disabled, onChange, onClick
             <Button
                 className="flex-1"
                 type="button"
-                label="Ajouter tag"
                 disabled={disabled}
                 onClick={(e) => {
                     onClick?.(e);
                     handleOnClick();
                 }}
-            />
+            >
+                Ajouter tag
+            </Button>
         </span>
     );
 }

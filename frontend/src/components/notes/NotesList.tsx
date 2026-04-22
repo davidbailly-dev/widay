@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import { CgSpinner } from "react-icons/cg";
 
-import { useNotes } from "@/hooks/useNotes";
 import { NoteCard } from "@/components/notes/NoteCard";
+import Pagination from "@/components/ui/Pagination";
 
 import type { Note } from "@/types";
 
@@ -21,13 +20,8 @@ interface Props {
 };
 
 export default function NotesList({
-    refreshKey,
-    dateStart = '',
-    dateEnd = '',
-    limit = 10,
     loading,
     notes,
-    search = '',
     selectedNote,
     setSelectedNote,
 }: Props) {
@@ -54,15 +48,18 @@ export default function NotesList({
     }
 
     return (
-        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-            {notes.map((note) => (
-                <NoteCard
-                    key={note._id}
-                    note={note}
-                    selected={selectedNote?._id === note._id ? true : false}
-                    onClick={() => handleSelectedNoteCard(note)}
-                />
-            ))}
-        </ul>
+        <div>
+            <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+                {notes.map((note) => (
+                    <NoteCard
+                        key={note._id}
+                        note={note}
+                        selected={selectedNote?._id === note._id ? true : false}
+                        onClick={() => handleSelectedNoteCard(note)}
+                    />
+                ))}
+            </ul>
+            <Pagination activePage={1} totalPages={10} />
+        </div>
     );
 }

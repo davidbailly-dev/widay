@@ -1,15 +1,17 @@
 import Input from "@/components/ui/Input";
 
 interface Props {
-    onChange?: React.ChangeEventHandler<HTMLInputElement>,
+    value: string;
+    onChange: (value: string) => void;
 }
 
-export default function NoteSearchInput({ onChange }: Props) {
+export default function NoteSearchInput({ value, onChange }: Props) {
     return (
         <Input
             className="w-full"
-            placeHolder="Rechercher des notes..."
-            onChange={onChange}
+            placeholder="Rechercher des notes..."
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
         />
     );
 }

@@ -4,45 +4,35 @@ import { useEffect, useState, useRef } from "react";
 
 import { MessageType, Note } from "@/types";
 import Button from "@/components/ui/Button";
-import InputDate from "@/components/ui/InputDate";
 import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
 import { TagItem } from '@/components/tag/TagItem';
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";
-import { getISODate } from "@/utils/date";
 
 const TAGS_LIMIT_PER_NOTE = 5;
 
 interface Props {
     className?: string;
     selectedNote?: Note,
-    editMode?: 'add' | 'update',
-    onCreated: (created: boolean) => void;
+    triggerRefresh: () => void;
 }
 
 export default function NoteForm({
     className,
-    onCreated,
-    editMode = 'add',
+    triggerRefresh,
     selectedNote
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
     const [disabledTagInput, setDisabledTagInput] = useState(false);
-
-    // Define now datetime
-    const today = new Date();
-    const defaultDate = getISODate(today);
-
-    const [selectedDate, setSelectedDate] = useState(defaultDate); // The date of the note to create
 
     // Function that push request to note backend API
     const { createNote, updateNote } = useNotes();
 
     // Set selected note or empty note
     const [note, setNote] = useState<Note>(selectedNote || {
-        date: selectedDate,
+        date: '',
         content: '',
         tags: [],
     });
@@ -66,21 +56,6 @@ export default function NoteForm({
         }
     }, [message]);
 
-    // Set the note date when it changes
-    useEffect(() => {
-        if (!selectedDate) return;
-
-        setNote((prev) =>
-            prev.date === selectedDate ? prev : {...prev, date: selectedDate}
-        );
-    }, [selectedDate]);
-
-    useEffect(() => {
-        if (!selectedNote) return;
-
-        setNote(selectedNote);
-    }, [selectedNote]);
-
     // Handle the form submit to create the note request to API
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -89,11 +64,11 @@ export default function NoteForm({
         resetMessage();
 
         try {
-            if (editMode == 'update' && !note._id) {
+            if (!selectedNote && !note._id) {
                 throw new Error("Impossible de modifier une note sans identifiant.");
             }
 
-            const res = editMode == 'add' ? await createNote(note) : await updateNote(note._id!, note);
+            const res = selectedNote ? await createNote(note) : await updateNote(note._id!, note);
 
             if (!res) {
                 throw new Error("La requête de mise à jour a échoué.");
@@ -101,15 +76,13 @@ export default function NoteForm({
 
             if (res.success) {
                 setMessage({
-                    content: editMode == 'add' ? "Note ajoutée avec succès !" : "Note modifiée avec succès !",
+                    content: selectedNote ? "Note ajoutée avec succès !" : "Note modifiée avec succès !",
                     type: 'success',
                     visible: true
                 });
 
-                if (editMode == 'add') {
-                    onCreated(true);
-                    resetNote();
-                }
+                triggerRefresh();
+                resetNote();
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
@@ -137,7 +110,8 @@ export default function NoteForm({
     // Reset note fields
     function resetNote() {
         setNote({
-            date: selectedDate || '',
+            _id: undefined,
+            date: '',
             content: '',
             tags: []
         });
@@ -202,10 +176,6 @@ export default function NoteForm({
         }
     }
 
-    const handleNoteFormDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDate(e.target.value);
-    }
-
     const handleResetNote = () => {
         resetNote();
         setMessage({
@@ -238,11 +208,6 @@ export default function NoteForm({
                 onChange={(e) => {handleContentChange(e)}}
             />
             <span className="flex flex-row gap-4 w-full">
-                <InputDate
-                    className="flex-1"
-                    value={note.date ? note.date : selectedDate}
-                    onChange={handleNoteFormDateChange}
-                />
                 <TagInput
                     className="flex-2"
                     value={tagToAdd}
@@ -255,16 +220,18 @@ export default function NoteForm({
                 <Button
                     className="flex-1"
                     type="submit"
-                    label={editMode == 'add' ? "Ajouter" : "Modifier"}
                     disabled={loading}
-                />
+                >
+                    {selectedNote ? "Ajouter" : "Modifier"}
+                </Button>
                 <Button
                     className="flex-1"
                     secondary={true}
                     type="button"
-                    label="Annuler"
                     onClick={handleResetNote}
-                />
+                >
+                    Annuler
+                </Button>
             </span>
             <Message
                 content={message.content}

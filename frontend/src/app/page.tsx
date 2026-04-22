@@ -8,7 +8,7 @@ import NoteSearchInput from "@/components/notes/NoteSearchInput";
 import ToolBar from "@/components/toolbar/ToolBar";
 import { useNotes } from "@/hooks/useNotes";
 
-import type { Note } from "@/types";
+const MIN_SEARCH_LENGTH = 3;
 
 export default function Home() {
     const { notes, getNotes, loading, selectedNote, setSelectedNote } = useNotes();
@@ -17,8 +17,12 @@ export default function Home() {
 
     // Fetch notes
     useEffect(() => {
-        getNotes('', '', 10, '');
-    }, [refreshKey]);
+        if (search.length >= MIN_SEARCH_LENGTH) {
+            getNotes('', '', 10, search);
+        } else {
+            getNotes('', '', 10, '');
+        }
+    }, [getNotes, refreshKey, search]);
 
     // Detect if a note has been created and refresh notes list component's key
     const handleRefreshNotesList = () => {
@@ -26,29 +30,21 @@ export default function Home() {
         setRefreshKey(key);
     };
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-    }
-
-    const handleSelectedNote = (note: Note) => {
-        alert(note._id);
-    }
-
     return (
         <div className="w-full">
             <div className="sticky top-0">
                 <ToolBar>
                     <NoteSearchInput
-                        onChange={handleSearch}
+                        value={search}
+                        onChange={setSearch}
                     />
                 </ToolBar>
             </div>
             <div className="flex flex-col lg:flex-row w-full justify-center gap-4 p-6">
                 <div className="flex flex-2 gap-4">
                     <NoteForm
-                        onCreated={handleRefreshNotesList}
+                        triggerRefresh={handleRefreshNotesList}
                         selectedNote={selectedNote}
-                        editMode={selectedNote ? 'update' : 'add'}
                     />
                 </div>
                 <div className="flex flex-3 flex-col gap-4 w-full">
