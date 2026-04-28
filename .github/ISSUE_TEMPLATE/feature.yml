@@ -3,37 +3,37 @@ description: "Ajouter une fonctionnalité"
 title: "feat: "
 labels: ["feature"]
 body:
-  - type: textaera
+  - type: textarea
     attributes:
       label: Contexte
     validations:
       required: true
   
-  - type: textaera
+  - type: textarea
     attributes:
       label: Problème
     validations:
       required: true
 
-  - type: textaera
+  - type: textarea
     attributes:
       label: Objectif
     validations:
       required: true
 
-  - type: textaera
+  - type: textarea
     attributes:
       label: Scope
     validations:
       required: true
 
-  - type: textaera
+  - type: textarea
     attributes:
       label: Contraintes
     validations:
       required: true
   
-  - type: textaera
+  - type: textarea
     attributes:
       label: Définition de terminé
     validations:
