@@ -1,13 +1,14 @@
 import { Note } from '@/types';
 
 import { noteService } from '@/services/api/note.service';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedNote, setSelectedNote] = useState<Note>();
 
-    const getNotes = async (dateStart?: string, dateEnd?: string, limit?: number, search?: string) => {
+    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string) => {
         try {
             setLoading(true);
             const notes = await noteService.get(dateStart, dateEnd, limit, search);
@@ -20,7 +21,7 @@ export const useNotes = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const createNote = async (data: Note) => {
         try {
@@ -34,10 +35,26 @@ export const useNotes = () => {
         }
     };
 
+    const updateNote = async (id: string, data: Note) => {
+        try {
+            const note = await noteService.update(id, data);
+
+            await getNotes();
+
+            return note;
+        } catch (error) {
+            console.error('Error updating note:', error);
+            throw error;
+        }
+    }
+
     return {
         notes,
         loading,
         getNotes,
         createNote,
+        updateNote,
+        selectedNote,
+        setSelectedNote
     };
 };

@@ -4,37 +4,35 @@ import { useEffect, useState, useRef } from "react";
 
 import { MessageType, Note } from "@/types";
 import Button from "@/components/ui/Button";
-import InputDate from "@/components/ui/InputDate";
 import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
-import TagItem from '@/components/tag/TagItem';
+import { TagItem } from '@/components/tag/TagItem';
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";
-import { getISODate } from "@/utils/date";
 
 const TAGS_LIMIT_PER_NOTE = 5;
 
 interface Props {
     className?: string;
-    onCreated: (created: boolean) => void;
+    selectedNote?: Note,
+    triggerRefresh: () => void;
 }
 
-export default function NoteForm({ className, onCreated }: Props) {
+export default function NoteForm({
+    className,
+    triggerRefresh,
+    selectedNote
+}: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
-
-    // Define now datetime
-    const today = new Date();
-    const defaultDate = getISODate(today);
-
-    const [selectedDate, setSelectedDate] = useState(defaultDate); // The date of the note to create
+    const [disabledTagInput, setDisabledTagInput] = useState(false);
 
     // Function that push request to note backend API
-    const { createNote } = useNotes();
+    const { createNote, updateNote } = useNotes();
 
-    // Note to be added
-    const [note, setNote] = useState<Note>({
-        date: selectedDate,
+    // Set selected note or empty note
+    const [note, setNote] = useState<Note>(selectedNote || {
+        date: '',
         content: '',
         tags: [],
     });
@@ -58,13 +56,6 @@ export default function NoteForm({ className, onCreated }: Props) {
         }
     }, [message]);
 
-    // Set the note date when it changes
-    useEffect(() => {
-        if (selectedDate) {
-            setNote({...note, date: selectedDate});
-        }
-    }, [selectedDate]);
-
     // Handle the form submit to create the note request to API
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -73,16 +64,25 @@ export default function NoteForm({ className, onCreated }: Props) {
         resetMessage();
 
         try {
-            const res = await createNote(note);
-            
+            if (!selectedNote && !note._id) {
+                throw new Error("Impossible de modifier une note sans identifiant.");
+            }
+
+            const res = selectedNote ? await createNote(note) : await updateNote(note._id!, note);
+
+            if (!res) {
+                throw new Error("La requête de mise à jour a échoué.");
+            }
+
             if (res.success) {
                 setMessage({
-                    content: 'Note ajoutée avec succès !',
+                    content: selectedNote ? "Note ajoutée avec succès !" : "Note modifiée avec succès !",
                     type: 'success',
                     visible: true
                 });
+
+                triggerRefresh();
                 resetNote();
-                onCreated(true);
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
@@ -110,7 +110,8 @@ export default function NoteForm({ className, onCreated }: Props) {
     // Reset note fields
     function resetNote() {
         setNote({
-            date: selectedDate || '',
+            _id: undefined,
+            date: '',
             content: '',
             tags: []
         });
@@ -131,6 +132,12 @@ export default function NoteForm({ className, onCreated }: Props) {
             ...note,
             tags: note.tags?.filter((tag) => tag.key !== key)
         });
+
+        const countTagsAdded = note.tags?.length || 0;
+
+        if (countTagsAdded <= TAGS_LIMIT_PER_NOTE) {
+            setDisabledTagInput(false);
+        }
     }
 
     // Set the current tag that the user is typing
@@ -144,6 +151,7 @@ export default function NoteForm({ className, onCreated }: Props) {
 
         // Limits the number of tags for a note
         if (countTagsAdded >= TAGS_LIMIT_PER_NOTE) {
+            setDisabledTagInput(true);
             return;
         }
 
@@ -161,11 +169,20 @@ export default function NoteForm({ className, onCreated }: Props) {
                     }
                 ]});
             setTagToAdd('');
+
+            if (countTagsAdded + 1 >= TAGS_LIMIT_PER_NOTE) {
+                setDisabledTagInput(true);
+            }
         }
     }
 
-    const handleNoteFormDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDate(e.target.value);
+    const handleResetNote = () => {
+        resetNote();
+        setMessage({
+            content: "",
+            type: "neutral",
+            visible: false
+        });
     }
 
     return (
@@ -179,7 +196,7 @@ export default function NoteForm({ className, onCreated }: Props) {
                 <TagItem
                     key={tag.key}
                     name={tag.label}
-                    onClick={(e) => {
+                    onClick={() => {
                         handleDeleteTag(tag.key);
                     }} />
             ))}
@@ -191,23 +208,31 @@ export default function NoteForm({ className, onCreated }: Props) {
                 onChange={(e) => {handleContentChange(e)}}
             />
             <span className="flex flex-row gap-4 w-full">
-                <InputDate
-                    className="flex-1"
-                    value={selectedDate}
-                    onChange={handleNoteFormDateChange}
-                />
                 <TagInput
                     className="flex-2"
                     value={tagToAdd}
+                    disabled={disabledTagInput}
                     onChange={handleTagInputChange}
                     onClick={handleTagInputClick}
                 />
             </span>
-            <Button
-                type="submit"
-                label="Créer la note"
-                disabled={loading}
-            />
+            <span className="flex gap-4">
+                <Button
+                    className="flex-1"
+                    type="submit"
+                    disabled={loading}
+                >
+                    {selectedNote ? "Ajouter" : "Modifier"}
+                </Button>
+                <Button
+                    className="flex-1"
+                    secondary={true}
+                    type="button"
+                    onClick={handleResetNote}
+                >
+                    Annuler
+                </Button>
+            </span>
             <Message
                 content={message.content}
                 type={message.type}

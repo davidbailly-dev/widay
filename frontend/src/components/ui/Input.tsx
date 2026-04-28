@@ -1,10 +1,9 @@
-import { useRef } from 'react';
-
 interface Props {
     className?: string,
     type?: string,
     value?: string,
-    placeHolder?: string,
+    placeholder?: string,
+    disabled?: boolean,
     inputRef?: React.Ref<HTMLInputElement>,
     onChange?: React.ChangeEventHandler<HTMLInputElement>
 }
@@ -13,7 +12,8 @@ export default function Input({
     className = '',
     type = "text",
     value,
-    placeHolder='',
+    placeholder='',
+    disabled=false,
     inputRef,
     onChange
 }: Props) {
@@ -23,7 +23,8 @@ export default function Input({
             ref={inputRef}
             type={type}
             value={value}
-            placeholder={placeHolder}
+            placeholder={placeholder}
+            disabled={disabled}
             onChange={onChange}
         />
     )

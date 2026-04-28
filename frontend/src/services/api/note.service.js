@@ -6,4 +6,8 @@ export const noteService = {
         method: 'POST',
         body: JSON.stringify(data),
     }),
-};
+    update: (id, data) => apiClient(`/api/notes/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+    })
+};  

@@ -6,15 +6,16 @@ import Input from '@/components/ui/Input';
 interface Props {
     value?: string,
     className?: string,
+    disabled?: boolean,
     onChange?: React.ChangeEventHandler<HTMLInputElement>,
     onClick?: React.MouseEventHandler<HTMLButtonElement>,
 }
 
-export default function TagInput({ value, className, onChange, onClick }: Props) {
+export default function TagInput({ value, className, disabled, onChange, onClick }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Focus on input after clicking on add button
-    const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleOnClick = () => {
         if (inputRef && inputRef.current) {
             inputRef.current.focus();
         }
@@ -23,22 +24,25 @@ export default function TagInput({ value, className, onChange, onClick }: Props)
     return (
         <span className={`flex gap-4 ${className}`}>
             <Input
-                className="flex-2"
+                className="flex-2 disabled:opacity-50"
                 inputRef={inputRef}
                 type="text"
-                placeHolder='Nom du tag...'
+                placeholder='Nom du tag...'
                 value={value}
                 onChange={onChange}
+                disabled={disabled}
             />
             <Button
                 className="flex-1"
                 type="button"
-                label="Ajouter tag"
+                disabled={disabled}
                 onClick={(e) => {
                     onClick?.(e);
-                    handleOnClick(e);
+                    handleOnClick();
                 }}
-            />
+            >
+                Ajouter tag
+            </Button>
         </span>
     );
 }

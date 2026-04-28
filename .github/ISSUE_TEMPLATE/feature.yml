@@ -1,0 +1,40 @@
+name: "Feature"
+description: "Ajouter une fonctionnalité"
+title: "feat: "
+labels: ["feature"]
+body:
+  - type: textaera
+    attributes:
+      label: Contexte
+    validations:
+      required: true
+  
+  - type: textaera
+    attributes:
+      label: Problème
+    validations:
+      required: true
+
+  - type: textaera
+    attributes:
+      label: Objectif
+    validations:
+      required: true
+
+  - type: textaera
+    attributes:
+      label: Scope
+    validations:
+      required: true
+
+  - type: textaera
+    attributes:
+      label: Contraintes
+    validations:
+      required: true
+  
+  - type: textaera
+    attributes:
+      label: Définition de terminé
+    validations:
+      required: true

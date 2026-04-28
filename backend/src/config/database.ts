@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const connectDB = async() => {
     try {
@@ -6,7 +6,7 @@ const connectDB = async() => {
 
         await mongoose.connect(uri, {});
 
-        console.log('Connected to MongoDB successfully !');
+        console.log('✅ Connected to MongoDB successfully !');
 
         // Force MongoDB indexes to be created in the database
         // const Note = require('../models/Note');
@@ -29,4 +29,4 @@ const connectDB = async() => {
     }
 };
 
-module.exports = connectDB;
+export default connectDB;

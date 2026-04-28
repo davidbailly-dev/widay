@@ -1,38 +1,33 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { CgSpinner } from 'react-icons/cg';
+import { CgSpinner } from "react-icons/cg";
 
-import { useNotes } from '@/hooks/useNotes';
-import TagItem from '@/components/tag/TagItem';
+import { NoteCard } from "@/components/notes/NoteCard";
+import Pagination from "@/components/ui/Pagination";
+
+import type { Note } from "@/types";
 
 interface Props {
     refreshKey: number,
     dateStart?: string,
     dateEnd?: string,
     limit?: number,
-    search?: string
+    loading: boolean,
+    notes: Note[],
+    search?: string,
+    selectedNote?: Note,
+    setSelectedNote: (note: Note) => void
 };
 
 export default function NotesList({
-    refreshKey,
-    dateStart = '',
-    dateEnd = '',
-    limit = 10,
-    search = ''
+    loading,
+    notes,
+    selectedNote,
+    setSelectedNote,
 }: Props) {
-    const { notes, getNotes, loading } = useNotes();
-
-    // Fetch requested notes
-    useEffect(() => {
-        let validatedSearch = '';
-
-        if (search.length >= 2) {
-            validatedSearch = search;
-        }
-
-        getNotes(dateStart, dateEnd, limit, validatedSearch);
-    }, [refreshKey, search]);
+    function handleSelectedNoteCard(note: Note) {
+        setSelectedNote(note);
+    }
 
     // If notes data are loading
     if (loading) {
@@ -44,7 +39,7 @@ export default function NotesList({
     }
 
     // If no notes data found
-    if (notes.length === 0) {
+    if (!notes || notes.length === 0) {
         return (
             <div className="flex justify-center items-center h-full">
                 <p className="text-stone-500">No notes found for this date.</p>
@@ -53,20 +48,18 @@ export default function NotesList({
     }
 
     return (
-        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-            {notes.map((note) => (
-                <li key={note._id} className="grid gap-4 p-3 border-2 border-stone-800 rounded-lg">
-                    <p>{note.date}</p>
-                    {notes && note.tags.length > 0 && (
-                        <span className="flex flex-wrap self-start gap-2">
-                        {note.tags.map((tag) => (
-                            <TagItem key={tag.key} name={tag.label} />
-                        ))}
-                        </span>
-                    )}
-                    <p className="whitespace-pre-line">{note.content}</p>
-                </li>
-            ))}
-        </ul>
+        <div>
+            <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+                {notes.map((note) => (
+                    <NoteCard
+                        key={note._id}
+                        note={note}
+                        selected={selectedNote?._id === note._id ? true : false}
+                        onClick={() => handleSelectedNoteCard(note)}
+                    />
+                ))}
+            </ul>
+            <Pagination activePage={1} totalPages={10} />
+        </div>
     );
 }

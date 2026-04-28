@@ -24,7 +24,7 @@ interface Week {
 }
 
 export default function Calendar({ className, onSelectedDay }: Props) {
-    const [selectedDay, setSelectedDay] = useState<String>('');
+    const [selectedDay, setSelectedDay] = useState<string>('');
 
     const locale= 'fr-FR';
     const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -100,13 +100,6 @@ function getWeeksInMonth(year: number, month: number) {
     if (lastDate.getDay() !== 1) {
         const missingDays: Day[] = [];
         
-        let prevMonthYear = new Date(year, month, 0); // Last day of previous month
-
-        // If current month is january, we consider december of previous year
-        if (month === 0) {
-            prevMonthYear = new Date(year - 1, 12, 0);
-        }
-
         let lastDayOfPrevMonth = new Date(year, month, 0).getDate();
 
         if (month == 0) {
