@@ -13,9 +13,15 @@ interface CreateNoteBody {
 interface GetNotesQuery {
     dateStart?: string,
     dateEnd?: string,
-    limit?: string,
+    limit?: number,
+    page?: number,
     search?: string,
 };
+
+type SortValue = 1 | -1 | { $meta: "textScore" };
+type SortQuery = Record<string, SortValue>;
+
+const RESULTS_LIMIT = 10;
 
 // Create a new note (inchangé)
 export const createNote = async (
@@ -77,56 +83,61 @@ export const getNotes = async (
     next: NextFunction
 ) => {
     try {
-        const { dateStart, dateEnd, limit, search } = req.query;
+        const { dateStart, dateEnd, limit, page, search } = req.query;
+
+        const pageNumber = Math.max(Number(page || 1), 1);
+        const limitNumber = Math.max(Number(limit) || RESULTS_LIMIT, 1);
+        const skip = (pageNumber - 1) * limitNumber;
+
         const baseQuery: Record<string, unknown> = {};
 
         if (dateStart && dateEnd) {
             baseQuery.date = { $gte: dateStart, $lte: dateEnd };
         }
 
-        let notes;
+        let query: Record<string, unknown> = { ...baseQuery };
+        let sort: SortQuery = { createdAt: -1, _id: -1 };
+        let projection = "date content tags createdAt updatedAt";
 
-        if (search && search.length >= 2) {
-            const regex = new RegExp(search, 'i');
-            
-            // Search text
-            const textResults = await Note
-                .find({ 
-                    $text: { $search: search },
-                    ...baseQuery 
-                })
-                .sort({ score: { $meta: "textScore" } })
-                .select({ score: { $meta: "textScore" } })
-                .limit(Number(limit) || 20);
+        if (typeof search === "string" && search.trim().length >= 2) {
+            query = {
+                ...baseQuery,
+                $text: { $search: search.trim() }
+            };
 
-            const textIds = textResults.map(n => n._id);
+            sort = {
+                score: { $meta: "textScore" },
+                createdAt: -1,
+                _id: -1
+            };
 
-            // Search regex avoiding doublons (ignore previous text results)
-            const regexResults = await Note
-                .find({ 
-                    $or: [
-                        { content: regex },
-                        { 'tags.label': regex }
-                    ],
-                    ...baseQuery,
-                    _id: { $nin: textIds } // Avoid doublons
-                })
-                .sort({ createdAt: -1 })
-                .limit(Number(limit) || 20);
-
-            // Merge text and regex results
-            notes = [...textResults, ...regexResults];
-        } else {
-            notes = await Note
-                .find(baseQuery)
-                .sort({ createdAt: -1 })
-                .limit(Number(limit) || 20);
+            projection = "date content tags createdAt updatedAt score";
         }
+
+        const [notes, total] = await Promise.all([
+            Note.find(query)
+                .select(projection)
+                .sort(sort)
+                .skip(skip)
+                .limit(limitNumber)
+                .lean(),
+            Note.countDocuments(query)
+        ]);
 
         res.json({
             success: true,
-            message: 'Found notes',
-            data: { notes }
+            message: "Found notes",
+            data: {
+                notes,
+                pagination: {
+                    page: pageNumber,
+                    limit: limitNumber,
+                    total,
+                    totalPages: Math.ceil(total / limitNumber),
+                    hasPrevPage: pageNumber > 1,
+                    hasNextPage: pageNumber * limitNumber < total
+                }
+            }
         });
     } catch (err) {
         next(err);
