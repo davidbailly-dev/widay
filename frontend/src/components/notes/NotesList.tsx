@@ -3,9 +3,9 @@
 import { CgSpinner } from "react-icons/cg";
 
 import { NoteCard } from "@/components/notes/NoteCard";
-import Pagination from "@/components/ui/Pagination";
+import PaginationList from "@/components/ui/PaginationList";
 
-import type { Note } from "@/types";
+import type { Note, Pagination } from "@/types";
 
 interface Props {
     refreshKey: number,
@@ -14,19 +14,21 @@ interface Props {
     limit?: number,
     loading: boolean,
     notes: Note[],
+    pagination?: Pagination,
     search?: string,
     selectedNote?: Note,
-    setSelectedNote: (note: Note) => void
+    setSelectedNote: (note: Note | undefined) => void
 };
 
 export default function NotesList({
     loading,
     notes,
+    pagination,
     selectedNote,
     setSelectedNote,
 }: Props) {
     function handleSelectedNoteCard(note: Note) {
-        setSelectedNote(note);
+        setSelectedNote(note === selectedNote ? undefined : note);
     }
 
     // If notes data are loading
@@ -54,12 +56,12 @@ export default function NotesList({
                     <NoteCard
                         key={note._id}
                         note={note}
-                        selected={selectedNote?._id === note._id ? true : false}
+                        isSelected={selectedNote?._id === note._id ? true : false}
                         onClick={() => handleSelectedNoteCard(note)}
                     />
                 ))}
             </ul>
-            <Pagination activePage={1} totalPages={10} />
+            <PaginationList activePage={pagination?.page} totalPages={pagination?.totalPages} />
         </div>
     );
 }

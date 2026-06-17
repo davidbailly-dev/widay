@@ -11,7 +11,7 @@ import { useNotes } from "@/hooks/useNotes";
 const MIN_SEARCH_LENGTH = 3;
 
 export default function Home() {
-    const { notes, getNotes, loading, selectedNote, setSelectedNote } = useNotes();
+    const { notes, getNotes, loading, selectedNote, setSelectedNote, pagination } = useNotes();
     const [refreshKey, setRefreshKey] = useState(0); // Key ot check if notes list should be refreshed
     const [search, setSearch] = useState('');
 
@@ -51,6 +51,7 @@ export default function Home() {
                     <NotesList
                         loading={loading}
                         notes={notes}
+                        pagination={pagination}
                         refreshKey={refreshKey}
                         search={search}
                         selectedNote={selectedNote}

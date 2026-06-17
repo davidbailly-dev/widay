@@ -1,8 +1,8 @@
 import Button from "./Button";
 
 interface PaginationProps {
-    activePage: number;
-    totalPages: number;
+    activePage?: number;
+    totalPages?: number;
 }
 
 interface PageNumberProps {
@@ -10,14 +10,14 @@ interface PageNumberProps {
     isActive: boolean;
 }
 
-export default function Pagination({
+export default function PaginationList({
     activePage = 1,
     totalPages = 1,
 }: PaginationProps) {
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     return (
-        <div>
+        <div className="space-x-2">
             <Button>Précédent</Button>
             {pages.map((pageNum) => (
                 <PageNumber
@@ -36,6 +36,6 @@ function PageNumber({
     isActive = false
 }: PageNumberProps ) {
     return (
-        <span className={isActive ? "font-bold" : ""}>{pageNum}</span>
+        <Button className={`px-4`} active={isActive}>{pageNum.toString()}</Button>
     );
 }

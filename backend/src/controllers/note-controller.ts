@@ -18,9 +18,6 @@ interface GetNotesQuery {
     search?: string,
 };
 
-type SortValue = 1 | -1 | { $meta: "textScore" };
-type SortQuery = Record<string, SortValue>;
-
 const RESULTS_LIMIT = 10;
 
 // Create a new note (inchangé)
@@ -31,9 +28,10 @@ export const createNote = async (
 ) => {
     try {
         const { date, content, tags } = req.body;
+        const noteDate = typeof date === "string" && date.trim() !== "" ? date : new Date().toISOString().split("T")[0];
 
         const note = new Note({
-            date,
+            date: noteDate,
             content,
             tags
         });
@@ -95,34 +93,66 @@ export const getNotes = async (
             baseQuery.date = { $gte: dateStart, $lte: dateEnd };
         }
 
-        let query: Record<string, unknown> = { ...baseQuery };
-        let sort: SortQuery = { createdAt: -1, _id: -1 };
-        let projection = "date content tags createdAt updatedAt";
+        let notes = [];
+        let total = 0;
 
         if (typeof search === "string" && search.trim().length >= 2) {
-            query = {
+            const words = search
+                .trim()
+                .split(/\s+/)
+                .filter(word => word.length >= 2);
+
+            const normalizedSearch = words.join(" ");
+
+            const textResults = await Note.find({
                 ...baseQuery,
-                $text: { $search: search.trim() }
-            };
+                $text: { $search: normalizedSearch }
+            })
+                .select({
+                    date: 1,
+                    content: 1,
+                    tags: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    score: { $meta: "textScore" }
+                })
+                .sort({
+                    score: { $meta: "textScore" },
+                    createdAt: -1,
+                    _id: -1
+                })
+                .lean();
 
-            sort = {
-                score: { $meta: "textScore" },
-                createdAt: -1,
-                _id: -1
-            };
+            const textIds = textResults.map(note => note._id)
 
-            projection = "date content tags createdAt updatedAt score";
-        }
+            const regexConditions = words.flatMap(word => [
+                { content: { $regex: word, $options: "i" } },
+                { "tags.label": { $regex: word, $options: "i" } }
+            ]);
 
-        const [notes, total] = await Promise.all([
-            Note.find(query)
-                .select(projection)
-                .sort(sort)
+            const regexResults = await Note.find({
+                ...baseQuery,
+                _id: { $nin: textIds },
+                $or: regexConditions
+            })
+                .select("date content tags createdAt updatedAt")
+                .sort({ createdAt: -1, _id: -1 })
+                .lean();
+
+            const merged = [...textResults, ...regexResults];
+
+            total = merged.length;
+            notes = merged.slice(skip, skip + limitNumber);
+        } else {
+            total = await Note.countDocuments(baseQuery);
+
+            notes = await Note.find(baseQuery)
+                .select("date content tags createdAt updatedAt")
+                .sort({ createdAt: -1, _id: -1 })
                 .skip(skip)
                 .limit(limitNumber)
-                .lean(),
-            Note.countDocuments(query)
-        ]);
+                .lean();
+        }
 
         res.json({
             success: true,

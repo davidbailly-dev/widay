@@ -14,9 +14,19 @@ export interface NavItemType {
 
 export interface Note {
     _id?: string,
-    date: string,
+    date?: string,
     content: string,
-    tags: Tag[]
+    tags: Tag[],
+    pagination: Pagination,
+}
+
+export interface Pagination {
+    page: number,
+    limit: number,
+    total: number,
+    totalPages: number,
+    hasPrevPage: boolean,
+    hasNextPage: boolean
 }
 
 export interface Tag {

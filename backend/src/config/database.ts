@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const connectDB = async() => {
     try {
-        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}`;
+        const uri = process.env.MONGODB_URI;
+
+        if (!uri) {
+            throw new Error('Missing required environment variable: MONGODB_URI');
+        }
 
         await mongoose.connect(uri, {});
 

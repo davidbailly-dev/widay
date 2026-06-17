@@ -10,7 +10,8 @@
     "test": "tsx --test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "check": "npm run lint && npm run test && npm run build"
+    "check": "npm run lint && npm run test && npm run build",
+    "seed:notes": "tsx scripts/seed-notes.ts"
   },
   "keywords": [],
   "author": "",
@@ -29,14 +30,14 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.9.3",
     "@types/supertest": "^7.2.0",
     "eslint": "^10.1.0",
     "globals": "^17.4.0",
     "mongodb-memory-server": "^11.0.1",
     "supertest": "^7.2.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.57.1"
   }
 }

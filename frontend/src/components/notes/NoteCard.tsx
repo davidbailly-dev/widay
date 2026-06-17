@@ -4,19 +4,19 @@ import { TagItem } from "@/components/tag/TagItem";
 
 interface Props {
     note: Note,
-    selected?: boolean,
+    isSelected?: boolean,
     onClick?: () => void
 }
 
 export function NoteCard({
     note,
-    selected = false,
+    isSelected = false,
     onClick
 }: Props) {
     return (
         <li
             key={note._id}
-            className={`grid gap-4 p-3 border-2 ${selected ? 'border-emerald-800 bg-stone-900/35' : 'border-stone-800'} rounded-lg cursor-pointer hover:border-emerald-500`}
+            className={`grid gap-4 p-3 border-2 ${isSelected ? 'border-emerald-500 bg-stone-900' : 'border-stone-800'} rounded-lg cursor-pointer hover:bg-stone-800`}
             onClick={onClick}
         >
             <p>{note.date}</p>

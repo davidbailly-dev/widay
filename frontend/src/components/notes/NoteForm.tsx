@@ -26,6 +26,11 @@ export default function NoteForm({
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
     const [disabledTagInput, setDisabledTagInput] = useState(false);
+    const defaultMessage: MessageType = {
+        content: '',
+        type: 'neutral',
+        visible: false
+    };
 
     // Function that push request to note backend API
     const { createNote, updateNote } = useNotes();
@@ -38,11 +43,7 @@ export default function NoteForm({
     });
 
     // Message content
-    const [message, setMessage] = useState<MessageType>({
-        content: '',
-        type: 'neutral',
-        visible: false
-    });
+    const [message, setMessage] = useState<MessageType>();
     
     const [loading, setLoading] = useState(false);
 
@@ -51,10 +52,17 @@ export default function NoteForm({
 
     // Focus on input content when note created with success
     useEffect(() => {
-        if (message.type == 'success') {
+        if (message?.type == 'success') {
             inputRef.current?.focus();
         }
     }, [message]);
+
+    useEffect(() => {
+        if (selectedNote) {
+            setNote(selectedNote);
+            setMessage(defaultMessage);
+        }
+    }, [selectedNote]);
 
     // Handle the form submit to create the note request to API
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -64,11 +72,11 @@ export default function NoteForm({
         resetMessage();
 
         try {
-            if (!selectedNote && !note._id) {
+            if (selectedNote && !note._id) {
                 throw new Error("Impossible de modifier une note sans identifiant.");
             }
 
-            const res = selectedNote ? await createNote(note) : await updateNote(note._id!, note);
+            const res = selectedNote ? await updateNote(note._id!, note) : await createNote(note);
 
             if (!res) {
                 throw new Error("La requête de mise à jour a échoué.");
@@ -222,7 +230,7 @@ export default function NoteForm({
                     type="submit"
                     disabled={loading}
                 >
-                    {selectedNote ? "Ajouter" : "Modifier"}
+                    {selectedNote ? "Modifer" : "Ajouter"}
                 </Button>
                 <Button
                     className="flex-1"
@@ -233,11 +241,12 @@ export default function NoteForm({
                     Annuler
                 </Button>
             </span>
+            {message &&
             <Message
                 content={message.content}
                 type={message.type}
                 visible={message.visible}
-            />
+            />}
         </form>
     );
 }
