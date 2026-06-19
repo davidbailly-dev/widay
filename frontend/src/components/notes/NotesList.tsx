@@ -1,16 +1,18 @@
 "use client";
 
-import { CgSpinner } from "react-icons/cg";
+import { CgSpinnerAlt } from "react-icons/cg";
 
 import { NoteCard } from "@/components/notes/NoteCard";
 import PaginationList from "@/components/ui/PaginationList";
 
 import type { Note, Pagination } from "@/types";
 
-interface Props {
+interface NotesListProps {
     refreshKey: number,
+    activePage: number,
     dateStart?: string,
     dateEnd?: string,
+    handleActivePage: (page: number) => void,
     limit?: number,
     loading: boolean,
     notes: Note[],
@@ -21,12 +23,14 @@ interface Props {
 };
 
 export default function NotesList({
+    activePage,
     loading,
+    handleActivePage,
     notes,
     pagination,
     selectedNote,
     setSelectedNote,
-}: Props) {
+}: NotesListProps) {
     function handleSelectedNoteCard(note: Note) {
         setSelectedNote(note === selectedNote ? undefined : note);
     }
@@ -35,7 +39,7 @@ export default function NotesList({
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full">
-                <CgSpinner className="animate-spin w-8 h-8 text-blue-500" />
+                <CgSpinnerAlt className="animate-spin w-8 h-8 text-emerald-500" />
             </div>
         );
     }
@@ -50,7 +54,7 @@ export default function NotesList({
     }
 
     return (
-        <div>
+        <div className="space-y-4 w-full">
             <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
                 {notes.map((note) => (
                     <NoteCard
@@ -61,7 +65,11 @@ export default function NotesList({
                     />
                 ))}
             </ul>
-            <PaginationList activePage={pagination?.page} totalPages={pagination?.totalPages} />
+            <PaginationList
+                className="flex justify-between w-full"
+                activePage={activePage}
+                onPageChange={handleActivePage}
+                totalPages={pagination?.totalPages} />
         </div>
     );
 }

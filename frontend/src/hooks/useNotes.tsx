@@ -9,11 +9,11 @@ export const useNotes = () => {
     const [loading, setLoading] = useState(true);
     const [selectedNote, setSelectedNote] = useState<Note | undefined>();
 
-    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string) => {
+    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string, page?: number) => {
         try {
             setLoading(true);
 
-            const notes = await noteService.get(dateStart, dateEnd, limit, search);
+            const notes = await noteService.get(dateStart, dateEnd, limit, search, page);
             
             setNotes(notes.data.notes);
             setPagination(notes.data.pagination);

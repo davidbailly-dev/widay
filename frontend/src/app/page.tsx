@@ -12,17 +12,25 @@ const MIN_SEARCH_LENGTH = 3;
 
 export default function Home() {
     const { notes, getNotes, loading, selectedNote, setSelectedNote, pagination } = useNotes();
+    const [activePage, setActivePage] = useState(pagination?.page || 1);
     const [refreshKey, setRefreshKey] = useState(0); // Key ot check if notes list should be refreshed
     const [search, setSearch] = useState('');
 
     // Fetch notes
     useEffect(() => {
         if (search.length >= MIN_SEARCH_LENGTH) {
-            getNotes('', '', 10, search);
+            getNotes('', '', 10, search, activePage);
         } else {
-            getNotes('', '', 10, '');
+            getNotes('', '', 10, '', activePage);
         }
     }, [getNotes, refreshKey, search]);
+
+    // Handle notes page selected by user
+    function handleActivePage(page: number) {
+        setActivePage(page);
+        const key = Date.now();
+        setRefreshKey(key);
+    }
 
     // Detect if a note has been created and refresh notes list component's key
     const handleRefreshNotesList = () => {
@@ -49,6 +57,8 @@ export default function Home() {
                 </div>
                 <div className="flex flex-3 flex-col gap-4 w-full">
                     <NotesList
+                        activePage={activePage}
+                        handleActivePage={handleActivePage}
                         loading={loading}
                         notes={notes}
                         pagination={pagination}

@@ -7,12 +7,19 @@ async function seedNotes(): Promise<void> {
     try {
         await ConnectDB();
 
+        // Delete notes
         if (process.argv.includes('--drop')) {
             console.log('Delete notes requested...');
             await Note.deleteMany({});
             console.log('... Notes deleted !')
         }
 
+        // Only delete notes, do not add
+        if (process.argv.includes('--drop-only')) {
+            process.exit(1);
+        }
+
+        // Add notes
         console.log('Seeding notes...');
         await Note.insertMany(notes);
         console.log('... Completed !');

@@ -17,7 +17,7 @@ export interface Note {
     date?: string,
     content: string,
     tags: Tag[],
-    pagination: Pagination,
+    pagination?: Pagination,
 }
 
 export interface Pagination {
