@@ -26,21 +26,17 @@ export default function NoteForm({
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
     const [disabledTagInput, setDisabledTagInput] = useState(false);
-    const defaultMessage: MessageType = {
+    const emptyNote: Note = {
+        date: '',
         content: '',
-        type: 'neutral',
-        visible: false
+        tags: [],
     };
 
     // Function that push request to note backend API
     const { createNote, updateNote } = useNotes();
 
     // Set selected note or empty note
-    const [note, setNote] = useState<Note>(selectedNote || {
-        date: '',
-        content: '',
-        tags: [],
-    });
+    const [note, setNote] = useState(() => selectedNote ?? emptyNote);
 
     // Message content
     const [message, setMessage] = useState<MessageType>();
@@ -56,13 +52,6 @@ export default function NoteForm({
             inputRef.current?.focus();
         }
     }, [message]);
-
-    useEffect(() => {
-        if (selectedNote) {
-            setNote(selectedNote);
-            setMessage(defaultMessage);
-        }
-    }, [selectedNote]);
 
     // Handle the form submit to create the note request to API
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {

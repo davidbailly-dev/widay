@@ -23,7 +23,7 @@ export default function Home() {
         } else {
             getNotes('', '', 10, '', activePage);
         }
-    }, [getNotes, refreshKey, search]);
+    }, [getNotes, refreshKey, search, activePage]);
 
     // Handle notes page selected by user
     function handleActivePage(page: number) {
@@ -51,6 +51,7 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row w-full justify-center gap-4 p-6">
                 <div className="flex flex-2 gap-4">
                     <NoteForm
+                        key={selectedNote?._id ?? 'new'}
                         triggerRefresh={handleRefreshNotesList}
                         selectedNote={selectedNote}
                     />
