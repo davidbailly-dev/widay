@@ -19,11 +19,36 @@ export default function PaginationList({
     onPageChange,
     totalPages = 1,
 }: PaginationProps) {
+    // Create an array of each page from total pages (page 1, page 2, page 3, etc.)
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    // Navigate to next page
+    const goToNextPage = () => {
+        const newPage = activePage + 1;
+
+        if (newPage >= 1 && newPage <= totalPages) {
+            // Set the new active page
+            onPageChange(newPage);
+        }
+    }
+
+    // Navigate to previous page
+    const goToPrevPage = () => {
+        const newPage = activePage - 1;
+
+        if (newPage >= 1 && newPage <= totalPages) {
+            // Set the new active page
+            onPageChange(newPage);
+        }
+    }
 
     return (
         <div className={`space-x-2 ${className}`}>
-            <Button>Précédent</Button>
+            <Button
+                onClick={goToPrevPage}
+            >
+                Précédent
+            </Button>
             <span className="space-x-2">
                 {pages.map((pageNum) => (
                     <PageNumber
@@ -34,7 +59,11 @@ export default function PaginationList({
                     />
                 ))}
             </span>
-            <Button>Suivant</Button>
+            <Button
+                onClick={goToNextPage}
+            >
+                Suivant
+            </Button>
         </div>
     );
 }
