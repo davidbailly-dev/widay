@@ -54,6 +54,7 @@ export default function Home() {
                         key={selectedNote?._id ?? 'new'}
                         triggerRefresh={handleRefreshNotesList}
                         selectedNote={selectedNote}
+                        setSelectedNote={setSelectedNote}
                     />
                 </div>
                 <div className="flex flex-3 flex-col gap-4 w-full">

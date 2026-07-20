@@ -17,12 +17,14 @@ interface Props {
     className?: string;
     selectedNote?: Note,
     triggerRefresh: () => void;
+    setSelectedNote: (note: Note | undefined) => void;
 }
 
 export default function NoteForm({
     className,
     triggerRefresh,
-    selectedNote
+    selectedNote,
+    setSelectedNote
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
     const [disabledTagInput, setDisabledTagInput] = useState(false);
@@ -72,9 +74,6 @@ export default function NoteForm({
             }
 
             if (res.success) {
-                console.log('selectedNote ID : ' + selectedNote?._id);
-                console.log('note ID : ' + note._id);
-
                 setMessage({
                     content: selectedNote && selectedNote._id == note._id ? "Note modifiée avec succès !" : "Note ajoutée avec succès !",
                     type: 'success',
@@ -82,7 +81,6 @@ export default function NoteForm({
                 });
 
                 triggerRefresh();
-                resetNote();
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
@@ -92,7 +90,6 @@ export default function NoteForm({
                 type: 'error',
                 visible: true
             });
-            // console.error('Error submiting note to create : ', err);
         } finally {
             setLoading(false);
         }
@@ -105,16 +102,6 @@ export default function NoteForm({
             type: 'neutral',
             visible: false
         })
-    }
-
-    // Reset note fields
-    function resetNote() {
-        setNote({
-            _id: undefined,
-            date: '',
-            content: '',
-            tags: []
-        });
     }
 
     // Reset info message and handle note content changes
@@ -177,12 +164,9 @@ export default function NoteForm({
     }
 
     const handleResetNote = () => {
-        resetNote();
-        setMessage({
-            content: "",
-            type: "neutral",
-            visible: false
-        });
+        setSelectedNote(undefined);
+        setNote(emptyNote);
+        resetMessage();
     }
 
     return (
@@ -222,7 +206,7 @@ export default function NoteForm({
                     type="submit"
                     disabled={loading}
                 >
-                    {selectedNote ? "Modifer" : "Ajouter"}
+                    {selectedNote && note._id != undefined ? "Modifer" : "Ajouter"}
                 </Button>
                 <Button
                     className="flex-1"
