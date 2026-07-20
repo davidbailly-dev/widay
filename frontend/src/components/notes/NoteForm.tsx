@@ -83,8 +83,11 @@ export default function NoteForm({
             }
 
             if (res.success) {
+                console.log('selectedNote ID : ' + selectedNote?._id);
+                console.log('note ID : ' + note._id);
+
                 setMessage({
-                    content: selectedNote ? "Note ajoutée avec succès !" : "Note modifiée avec succès !",
+                    content: selectedNote && selectedNote._id == note._id ? "Note modifiée avec succès !" : "Note ajoutée avec succès !",
                     type: 'success',
                     visible: true
                 });
