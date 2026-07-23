@@ -120,6 +120,7 @@ export default function NoteForm({
             
             if (res.success) {
                 alert(res.message);
+                triggerRefresh();
             }
         }
     }

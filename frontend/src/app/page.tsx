@@ -48,28 +48,24 @@ export default function Home() {
                     />
                 </ToolBar>
             </div>
-            <div className="flex flex-col lg:flex-row w-full justify-center gap-4 p-6">
-                <div className="flex flex-2 gap-4">
-                    <NoteForm
-                        key={selectedNote?._id ?? 'new'}
-                        triggerRefresh={handleRefreshNotesList}
-                        selectedNote={selectedNote}
-                        setSelectedNote={setSelectedNote}
-                    />
-                </div>
-                <div className="flex flex-3 flex-col gap-4 w-full">
-                    <NotesList
-                        activePage={activePage}
-                        handleActivePage={handleActivePage}
-                        loading={loading}
-                        notes={notes}
-                        pagination={pagination}
-                        refreshKey={refreshKey}
-                        search={search}
-                        selectedNote={selectedNote}
-                        setSelectedNote={setSelectedNote}
-                    />
-                </div>
+            <div className="flex flex-col w-2/3 p-6 gap-6 m-auto">
+                <NoteForm
+                    key={selectedNote?._id ?? 'new'}
+                    triggerRefresh={handleRefreshNotesList}
+                    selectedNote={selectedNote}
+                    setSelectedNote={setSelectedNote}
+                />
+                <NotesList
+                    activePage={activePage}
+                    handleActivePage={handleActivePage}
+                    loading={loading}
+                    notes={notes}
+                    pagination={pagination}
+                    refreshKey={refreshKey}
+                    search={search}
+                    selectedNote={selectedNote}
+                    setSelectedNote={setSelectedNote}
+                />
             </div>
         </div>
     );

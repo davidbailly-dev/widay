@@ -55,7 +55,7 @@ export default function NotesList({
 
     return (
         <div className="space-y-4 w-full">
-            <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+            <ul className="flex flex-col gap-4 w-full">
                 {notes.map((note) => (
                     <NoteCard
                         key={note._id}

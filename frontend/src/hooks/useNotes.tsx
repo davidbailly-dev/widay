@@ -32,8 +32,6 @@ export const useNotes = () => {
         try {
             const newNote = await noteService.create(data);
             
-            await getNotes();
-            
             return newNote;
         } catch (error) {
             console.error('Error creating note:', error);
@@ -45,12 +43,17 @@ export const useNotes = () => {
         try {
             const result = await noteService.delete(id);
 
-            await getNotes();
-
             return result;
         } catch (error) {
-            console.error('Error deleting note:', error);
-            throw error;
+            const res = {
+                success: false,
+                message: 'Error deleting note: ' + error
+            }
+
+            return res;
+
+            // console.error('Error deleting note:', error);
+            // throw error;
         }
     }
 

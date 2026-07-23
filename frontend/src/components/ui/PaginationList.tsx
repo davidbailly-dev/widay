@@ -20,7 +20,7 @@ export default function PaginationList({
     totalPages = 1,
 }: PaginationProps) {
     // Create an array of each page from total pages (page 1, page 2, page 3, etc.)
-    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    var pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     // Navigate to next page
     const goToNextPage = () => {
@@ -43,7 +43,7 @@ export default function PaginationList({
     }
 
     return (
-        <div className={`space-x-2 ${className}`}>
+        <div className={`items-center space-x-2 ${className}`}>
             <Button
                 onClick={goToPrevPage}
             >
@@ -58,6 +58,9 @@ export default function PaginationList({
                         pageNum={pageNum}
                     />
                 ))}
+            </span>
+            <span className="">
+                {totalPages} page(s)
             </span>
             <Button
                 onClick={goToNextPage}
