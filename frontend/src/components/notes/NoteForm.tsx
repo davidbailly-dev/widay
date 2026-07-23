@@ -35,7 +35,7 @@ export default function NoteForm({
     };
 
     // Function that push request to note backend API
-    const { createNote, updateNote } = useNotes();
+    const { createNote, deleteNote, updateNote } = useNotes();
 
     // Set selected note or empty note
     const [note, setNote] = useState(() => selectedNote ?? emptyNote);
@@ -112,6 +112,16 @@ export default function NoteForm({
             visible: false
         })
         setNote({ ... note, content: e.target.value });
+    }
+
+    const handleDeleteNote = async () => {
+        if (note?._id) {
+            const res = await deleteNote(note._id);
+            
+            if (res.success) {
+                alert(res.message);
+            }
+        }
     }
 
     const handleDeleteTag = (key: string) => {
@@ -215,6 +225,12 @@ export default function NoteForm({
                     onClick={handleResetNote}
                 >
                     Annuler
+                </Button>
+                <Button
+                    secondary={true}
+                    onClick={handleDeleteNote}
+                >
+                    Supprimer
                 </Button>
             </span>
             {message &&

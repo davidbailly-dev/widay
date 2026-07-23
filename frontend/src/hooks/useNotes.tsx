@@ -2,6 +2,7 @@ import { Note, Pagination } from '@/types';
 
 import { noteService } from '@/services/api/note.service';
 import { useCallback, useState } from 'react';
+import { throwInvariantForMissingStore } from 'next/dist/server/app-render/work-unit-async-storage.external';
 
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -30,6 +31,7 @@ export const useNotes = () => {
     const createNote = async (data: Note) => {
         try {
             const newNote = await noteService.create(data);
+            
             await getNotes();
             
             return newNote;
@@ -38,6 +40,19 @@ export const useNotes = () => {
             throw error;
         }
     };
+
+    const deleteNote = async (id: string) => {
+        try {
+            const result = await noteService.delete(id);
+
+            await getNotes();
+
+            return result;
+        } catch (error) {
+            console.error('Error deleting note:', error);
+            throw error;
+        }
+    }
 
     const updateNote = async (id: string, data: Note) => {
         try {
@@ -58,6 +73,7 @@ export const useNotes = () => {
         loading,
         getNotes,
         createNote,
+        deleteNote,
         updateNote,
         selectedNote,
         setSelectedNote
