@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { CgUndo } from "react-icons/cg";
 
 import { MessageType, Note } from "@/types";
 import Button from "@/components/ui/Button";
@@ -27,7 +28,7 @@ export default function NoteForm({
     setSelectedNote
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
-    const [disabledTagInput, setDisabledTagInput] = useState(false);
+    const [disabledTagInput, setDisabledTagInput] = useState(false); // Used to disabled TagInput component if max tags limit has been reached
     const emptyNote: Note = {
         date: '',
         content: '',
@@ -43,6 +44,7 @@ export default function NoteForm({
     // Message content
     const [message, setMessage] = useState<MessageType>();
     
+    // Loading
     const [loading, setLoading] = useState(false);
 
     // Used to focus to input after submiting a note
@@ -55,7 +57,7 @@ export default function NoteForm({
         }
     }, [message]);
 
-    // Handle the form submit to create the note request to API
+    // Handle the form submit to create a new note
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -67,24 +69,27 @@ export default function NoteForm({
                 throw new Error("Impossible de modifier une note sans identifiant.");
             }
 
-            const res = selectedNote ? await updateNote(note._id!, note) : await createNote(note);
+            const res = await createNote(note);
 
             if (!res) {
-                throw new Error("La requête de mise à jour a échoué.");
+                throw new Error("La requête de création d'une nouvelle note a échoué.");
             }
 
             if (res.success) {
+                // Set success message for user
                 setMessage({
-                    content: selectedNote && selectedNote._id == note._id ? "Note modifiée avec succès !" : "Note ajoutée avec succès !",
+                    content: "Note ajoutée avec succès !",
                     type: 'success',
                     visible: true
                 });
 
+                // Refresh notes displayed
                 triggerRefresh();
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             
+            // Set error message for user
             setMessage({
                 content: message,
                 type: 'error',
@@ -114,17 +119,7 @@ export default function NoteForm({
         setNote({ ... note, content: e.target.value });
     }
 
-    const handleDeleteNote = async () => {
-        if (note?._id) {
-            const res = await deleteNote(note._id);
-            
-            if (res.success) {
-                alert(res.message);
-                triggerRefresh();
-            }
-        }
-    }
-
+    // Delete a tag from database for a given note
     const handleDeleteTag = (key: string) => {
         setNote({
             ...note,
@@ -153,6 +148,7 @@ export default function NoteForm({
             return;
         }
 
+        // Generate a random key for a tag
         const tagKey = crypto.randomUUID();
 
         if (tagToAdd) {
@@ -174,9 +170,11 @@ export default function NoteForm({
         }
     }
 
+    // Reset note form inputs
     const handleResetNote = () => {
         setSelectedNote(undefined);
         setNote(emptyNote);
+        setTagToAdd('');
         resetMessage();
     }
 
@@ -217,21 +215,15 @@ export default function NoteForm({
                     type="submit"
                     disabled={loading}
                 >
-                    {selectedNote && note._id != undefined ? "Modifer" : "Ajouter"}
+                    Créer la note
                 </Button>
                 <Button
-                    className="flex-1"
+                    className="w-12"
+                    icon={CgUndo}
                     secondary={true}
                     type="button"
                     onClick={handleResetNote}
                 >
-                    Annuler
-                </Button>
-                <Button
-                    secondary={true}
-                    onClick={handleDeleteNote}
-                >
-                    Supprimer
                 </Button>
             </span>
             {message &&

@@ -48,7 +48,7 @@ export default function Home() {
                     />
                 </ToolBar>
             </div>
-            <div className="flex flex-col w-2/3 p-6 gap-6 m-auto">
+            <div className="flex flex-col w-full lg:w-2/3 p-6 gap-6 m-auto">
                 <NoteForm
                     key={selectedNote?._id ?? 'new'}
                     triggerRefresh={handleRefreshNotesList}

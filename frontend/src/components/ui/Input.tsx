@@ -10,11 +10,11 @@ interface Props {
 
 export default function Input({
     className = '',
-    type = "text",
-    value,
-    placeholder='',
     disabled=false,
     inputRef,
+    placeholder='',
+    type = "text",
+    value,
     onChange
 }: Props) {
     return (

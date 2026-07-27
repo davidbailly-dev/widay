@@ -1,8 +1,7 @@
 import { Note, Pagination } from '@/types';
 
-import { noteService } from '@/services/api/note.service';
 import { useCallback, useState } from 'react';
-import { throwInvariantForMissingStore } from 'next/dist/server/app-render/work-unit-async-storage.external';
+import { noteService } from '@/services/api/note.service';
 
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -16,8 +15,8 @@ export const useNotes = () => {
 
             const notes = await noteService.get(dateStart, dateEnd, limit, search, page);
             
-            setNotes(notes.data.notes);
-            setPagination(notes.data.pagination);
+            setNotes(notes.data?.notes || []);
+            setPagination(notes.data?.pagination);
 
             return notes.data;
         } catch (error) {

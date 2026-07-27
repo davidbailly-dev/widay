@@ -20,6 +20,10 @@ out/
 # builds
 build/
 dist/
+backend/build
+backend/dist
+frontend/build
+frontend/dist
 
 # Logs
 logs/

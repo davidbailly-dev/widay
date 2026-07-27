@@ -20,7 +20,7 @@ export default function PaginationList({
     totalPages = 1,
 }: PaginationProps) {
     // Create an array of each page from total pages (page 1, page 2, page 3, etc.)
-    var pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     // Navigate to next page
     const goToNextPage = () => {

@@ -1,6 +1,10 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function apiClient(endpoint, options = {}) {
+interface ApiClientOptions extends RequestInit {
+    headers?: Record<string, string>
+}
+
+export async function apiClient<T = unknown>(endpoint: string, options: ApiClientOptions = {}): Promise<T> {
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -17,5 +21,5 @@ export async function apiClient(endpoint, options = {}) {
         throw new Error(err.message || `HTTP ${res.status}`);
     }
 
-    return res.json();
+    return res.json() as Promise<T>;
 }

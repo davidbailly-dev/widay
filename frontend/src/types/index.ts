@@ -1,5 +1,15 @@
 import { IconType } from "react-icons";
 
+export interface ApiResponse {
+    success: boolean,
+    message: string,
+    data?: {
+        note?: Note,
+        notes?: Note[],
+        pagination?: Pagination,
+    },
+}
+
 export interface MessageType {
     content: string,
     type: 'success' | 'error' | 'warning' | 'neutral',
