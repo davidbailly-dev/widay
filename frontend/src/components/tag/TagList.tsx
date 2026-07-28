@@ -3,21 +3,24 @@ import { TagItem } from "@/components/tag/TagItem";
 
 interface Props {
     className?: string,
-    tags: Tag[]
+    tags: Tag[],
+    handleDeleteTag?: (tagKey: string) => void
 }
 
 export function TagList({
     className = '',
-    tags = []
+    tags = [],
+    handleDeleteTag
 }: Props) {
     return (
         <div
-            className={`flex gap-2 ${className}`}>
+            className={`flex flex-wrap gap-2 ${className}`}>
         {
             tags.map((tag) => (
                 <TagItem
                     key={tag.key}
                     name={tag.label}
+                    onClick={() => handleDeleteTag?.(tag.key)}
                 />
             ))
         }

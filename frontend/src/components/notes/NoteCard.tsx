@@ -1,13 +1,18 @@
 import type { Note } from "@/types";
 
+import { useState } from "react";
+
+// Components
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { TagList } from "@/components/tag/TagList";
 
+// Hooks
+
+// Icons
 import { FiSave, FiTrash2 } from "react-icons/fi";
 import { CgUndo } from "react-icons/cg";
-import { GrOverview } from "react-icons/gr";
 
 interface Props {
     note: Note,
@@ -20,6 +25,8 @@ export function NoteCard({
     isSelected = false,
     onClick
 }: Props) {
+    const [tempNote, setTempNote] = useState(note);
+
     const handleChangeDate = () => {
         alert('Date saved');
     }
@@ -36,30 +43,35 @@ export function NoteCard({
         alert('Card saved');
     }
 
+    const handleDeleteTag = (tagKey: string) => {
+        setTempNote({
+            ...tempNote,
+            tags: tempNote.tags?.filter((tag) => tag.key !== tagKey)
+        });
+    }
+
     return (
         <li
-            key={note._id}
+            key={tempNote._id}
             className={`flex flex-col gap-4 p-3 border-2 ${isSelected ? 'border-emerald-500 bg-stone-900/50' : 'border-stone-800'} rounded-lg cursor-pointer hover:border-emerald-500`}
             onClick={onClick}
         >
-            <div className={isSelected ? 'hidden' : 'block space-y-4'}>
-                <span className="flex gap-4">
-                    <span className="text-emerald-200">{note.date}</span>
-                    <TagList className="flex-2 justify-end" tags={note.tags} />
-                </span>
-                <p>{note.content}</p>
+            <div className={isSelected ? 'hidden' : 'flex flex-col gap-2'}>
+                <span className="text-emerald-200">{tempNote.date}</span>
+                <TagList className="" tags={tempNote.tags} />
+                <p>{tempNote.content}</p>
             </div>
             <form className={isSelected ? `flex flex-col gap-4` : 'hidden'}>
                 <span className="flex flex-wrap gap-2">
                     <Input
-                        className="flex-1"
                         onChange={handleChangeDate}
                         type="date"
-                        value={note.date}
+                        value={tempNote.date}
                     />
                     <TagList
-                        className="flex-1"
-                        tags={note.tags}
+                        className=""
+                        tags={tempNote.tags}
+                        handleDeleteTag={(tagKey) => handleDeleteTag(tagKey)}
                     />
                     <span className="flex-2 flex justify-end gap-2">
                         <Button
@@ -80,7 +92,7 @@ export function NoteCard({
                     </span>
                 </span>
                 <TextArea
-                    value={note.content}  
+                    value={tempNote.content}  
                 />
             </form>
         </li>

@@ -7,7 +7,7 @@ import { MessageType, Note } from "@/types";
 import Button from "@/components/ui/Button";
 import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
-import { TagItem } from '@/components/tag/TagItem';
+import { TagList } from "@/components/tag/TagList";
 import TextArea from "@/components/ui/TextArea";
 
 import { useNotes } from "@/hooks/useNotes";
@@ -15,10 +15,10 @@ import { useNotes } from "@/hooks/useNotes";
 const TAGS_LIMIT_PER_NOTE = 5;
 
 interface Props {
-    className?: string;
+    className?: string,
     selectedNote?: Note,
-    triggerRefresh: () => void;
-    setSelectedNote: (note: Note | undefined) => void;
+    triggerRefresh: () => void,
+    setSelectedNote: (note: Note | undefined) => void
 }
 
 export default function NoteForm({
@@ -119,11 +119,11 @@ export default function NoteForm({
         setNote({ ... note, content: e.target.value });
     }
 
-    // Delete a tag from database for a given note
-    const handleDeleteTag = (key: string) => {
+    // Delete an added tag from note
+    const handleDeleteTag = (tagKey: string) => {
         setNote({
             ...note,
-            tags: note.tags?.filter((tag) => tag.key !== key)
+            tags: note.tags?.filter((tag) => tag.key !== tagKey)
         });
 
         const countTagsAdded = note.tags?.length || 0;
@@ -183,18 +183,10 @@ export default function NoteForm({
             className={`flex flex-col gap-4 w-full ${className}`}
             onSubmit={handleSubmit}
         >
-            {note.tags && note.tags.length > 0 && (
-            <span className="flex gap-2">
-            {note.tags?.map((tag) => (
-                <TagItem
-                    key={tag.key}
-                    name={tag.label}
-                    onClick={() => {
-                        handleDeleteTag(tag.key);
-                    }} />
-            ))}
-            </span>
-            )}
+            <TagList
+                tags={note.tags}
+                handleDeleteTag={(tagKey) => handleDeleteTag(tagKey)}
+            />
             <TextArea
                 value={note.content}
                 inputRef={inputRef}
