@@ -7,8 +7,10 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { TagList } from "@/components/tag/TagList";
+import TagInput from "@/components/tag/TagInput";
 
-// Hooks
+// Types
+import { Tag } from "@/types";
 
 // Icons
 import { FiSave, FiTrash2 } from "react-icons/fi";
@@ -43,10 +45,11 @@ export function NoteCard({
         alert('Card saved');
     }
 
-    const handleDeleteTag = (tagKey: string) => {
+    // Handle tags modifications (addition or deletion)
+    const handleTagChange = (newTags: Tag[]) => {
         setTempNote({
             ...tempNote,
-            tags: tempNote.tags?.filter((tag) => tag.key !== tagKey)
+            tags: newTags
         });
     }
 
@@ -58,7 +61,9 @@ export function NoteCard({
         >
             <div className={isSelected ? 'hidden' : 'flex flex-col gap-2'}>
                 <span className="text-emerald-200">{tempNote.date}</span>
-                <TagList className="" tags={tempNote.tags} />
+                <TagList
+                    tags={tempNote.tags}
+                />
                 <p>{tempNote.content}</p>
             </div>
             <form className={isSelected ? `flex flex-col gap-4` : 'hidden'}>
@@ -69,23 +74,26 @@ export function NoteCard({
                         value={tempNote.date}
                     />
                     <TagList
-                        className=""
+                        handleTagChange={(newTags: Tag[]) => handleTagChange(newTags)}
                         tags={tempNote.tags}
-                        handleDeleteTag={(tagKey) => handleDeleteTag(tagKey)}
+                    />
+                    <TagInput
+                        handleTagChange={(newTags: Tag[]) => handleTagChange(newTags)}
+                        tags={tempNote.tags}
                     />
                     <span className="flex-2 flex justify-end gap-2">
                         <Button
-                            className="h-12"
+                            className="h-12 w-12"
                             icon={FiSave}
                             onClick={handleSave}
                         />
                         <Button
-                            className="h-12"
+                            className="h-12 w-12"
                             icon={CgUndo}
                             onClick={handleReset}
                         />
                         <Button
-                            className="h-12"
+                            className="h-12 w-12"
                             icon={FiTrash2}
                             onClick={handleDelete}
                         />

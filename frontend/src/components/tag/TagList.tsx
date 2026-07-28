@@ -1,17 +1,29 @@
+// Main
+import { useEffect, useState } from "react";
+
+// Types
 import { Tag } from "@/types";
+
+// Components
 import { TagItem } from "@/components/tag/TagItem";
 
 interface Props {
     className?: string,
     tags: Tag[],
-    handleDeleteTag?: (tagKey: string) => void
+    handleTagChange?: (newTags: Tag[]) => void
 }
 
 export function TagList({
     className = '',
     tags = [],
-    handleDeleteTag
+    handleTagChange
 }: Props) {
+    const handleDeleteTag = (tagKey: string) => {
+        const newTags = tags.filter((tag) => tag.key !== tagKey);
+
+        handleTagChange?.(newTags);
+    }
+
     return (
         <div
             className={`flex flex-wrap gap-2 ${className}`}>
@@ -20,7 +32,7 @@ export function TagList({
                 <TagItem
                     key={tag.key}
                     name={tag.label}
-                    onClick={() => handleDeleteTag?.(tag.key)}
+                    onClick={() => handleDeleteTag(tag.key)}
                 />
             ))
         }
