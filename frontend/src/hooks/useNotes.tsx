@@ -1,20 +1,24 @@
-import { Note } from '@/types';
+import { Note, Pagination } from '@/types';
 
-import { noteService } from '@/services/api/note.service';
 import { useCallback, useState } from 'react';
+import { noteService } from '@/services/api/note.service';
 
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
+    const [pagination, setPagination] = useState<Pagination | undefined>();
     const [loading, setLoading] = useState(true);
-    const [selectedNote, setSelectedNote] = useState<Note>();
+    const [selectedNote, setSelectedNote] = useState<Note | undefined>();
 
-    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string) => {
+    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string, page?: number) => {
         try {
             setLoading(true);
-            const notes = await noteService.get(dateStart, dateEnd, limit, search);
-            setNotes(notes.data.notes);
 
-            return notes.data.notes;
+            const notes = await noteService.get(dateStart, dateEnd, limit, search, page);
+            
+            setNotes(notes.data?.notes || []);
+            setPagination(notes.data?.pagination);
+
+            return notes.data;
         } catch (error) {
             console.error('Error fetching notes:', error);
             throw error;
@@ -26,7 +30,6 @@ export const useNotes = () => {
     const createNote = async (data: Note) => {
         try {
             const newNote = await noteService.create(data);
-            await getNotes();
             
             return newNote;
         } catch (error) {
@@ -34,6 +37,24 @@ export const useNotes = () => {
             throw error;
         }
     };
+
+    const deleteNote = async (id: string) => {
+        try {
+            const result = await noteService.delete(id);
+
+            return result;
+        } catch (error) {
+            const res = {
+                success: false,
+                message: 'Error deleting note: ' + error
+            }
+
+            return res;
+
+            // console.error('Error deleting note:', error);
+            // throw error;
+        }
+    }
 
     const updateNote = async (id: string, data: Note) => {
         try {
@@ -50,9 +71,11 @@ export const useNotes = () => {
 
     return {
         notes,
+        pagination,
         loading,
         getNotes,
         createNote,
+        deleteNote,
         updateNote,
         selectedNote,
         setSelectedNote

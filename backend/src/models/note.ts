@@ -1,14 +1,8 @@
 import mongoose from "mongoose";
 
-import type { Tag } from "../types/note";
+import type { Note, Tag } from "../types/note";
 
-interface NoteDoc {
-    date: string,
-    content: string,
-    tags?: Tag[]
-}
-
-const noteSchema = new mongoose.Schema<NoteDoc>({
+const noteSchema = new mongoose.Schema<Note>({
     date: {
         type: String,
         required: true,

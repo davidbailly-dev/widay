@@ -1,33 +1,77 @@
 import type { Note } from "@/types";
 
-import { TagItem } from "@/components/tag/TagItem";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import TextArea from "@/components/ui/TextArea";
+import { TagList } from "@/components/tag/TagList";
+
+import { FiSave, FiTrash2 } from "react-icons/fi";
+import { CgUndo } from "react-icons/cg";
 
 interface Props {
     note: Note,
-    selected?: boolean,
+    isSelected?: boolean,
     onClick?: () => void
 }
 
 export function NoteCard({
     note,
-    selected = false,
+    isSelected = false,
     onClick
 }: Props) {
+    const handleChangeDate = () => {
+        alert('Date saved');
+    }
+
+    const handleDelete = () => {
+        alert('Note deleted');
+    }
+
+    const handleReset = () => {
+        alert('Note reset to original values');
+    }
+
+    const handleSave = () => {
+        alert('Card saved');
+    }
+
     return (
         <li
             key={note._id}
-            className={`grid gap-4 p-3 border-2 ${selected ? 'border-emerald-800 bg-stone-900/35' : 'border-stone-800'} rounded-lg cursor-pointer hover:border-emerald-500`}
-            onClick={onClick}
+            className={`flex flex-col gap-4 p-3 border-2 ${isSelected ? 'border-emerald-500 bg-stone-900/50' : 'border-stone-800'} rounded-lg cursor-pointer hover:border-emerald-500`}
         >
-            <p>{note.date}</p>
-            {note.tags.length > 0 && (
-                <span className="flex flex-wrap self-start gap-2">
-                {note.tags.map((tag) => (
-                    <TagItem key={tag.key} name={tag.label} />
-                ))}
+            <span className="flex flex-wrap gap-2">
+                <Input
+                    className="flex-1"
+                    onChange={handleChangeDate}
+                    type="date"
+                    value={note.date}
+                />
+                <TagList
+                    className="flex-1"
+                    tags={note.tags}
+                />
+                <span className="flex-2 flex justify-end gap-2">
+                    <Button
+                        className="h-12"
+                        icon={FiSave}
+                        onClick={handleSave}
+                    />
+                    <Button
+                        className="h-12"
+                        icon={CgUndo}
+                        onClick={handleReset}
+                    />
+                    <Button
+                        className="h-12"
+                        icon={FiTrash2}
+                        onClick={handleDelete}
+                    />
                 </span>
-            )}
-            <p className="whitespace-pre-line">{note.content}</p>
+            </span>
+            <TextArea
+                value={note.content}  
+            />
         </li>
     );
 }

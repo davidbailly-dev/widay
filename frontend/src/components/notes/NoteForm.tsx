@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { CgUndo } from "react-icons/cg";
 
 import { MessageType, Note } from "@/types";
 import Button from "@/components/ui/Button";
@@ -17,33 +18,33 @@ interface Props {
     className?: string;
     selectedNote?: Note,
     triggerRefresh: () => void;
+    setSelectedNote: (note: Note | undefined) => void;
 }
 
 export default function NoteForm({
     className,
     triggerRefresh,
-    selectedNote
+    selectedNote,
+    setSelectedNote
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
-    const [disabledTagInput, setDisabledTagInput] = useState(false);
-
-    // Function that push request to note backend API
-    const { createNote, updateNote } = useNotes();
-
-    // Set selected note or empty note
-    const [note, setNote] = useState<Note>(selectedNote || {
+    const [disabledTagInput, setDisabledTagInput] = useState(false); // Used to disabled TagInput component if max tags limit has been reached
+    const emptyNote: Note = {
         date: '',
         content: '',
         tags: [],
-    });
+    };
+
+    // Function that push request to note backend API
+    const { createNote, deleteNote, updateNote } = useNotes();
+
+    // Set selected note or empty note
+    const [note, setNote] = useState(() => selectedNote ?? emptyNote);
 
     // Message content
-    const [message, setMessage] = useState<MessageType>({
-        content: '',
-        type: 'neutral',
-        visible: false
-    });
+    const [message, setMessage] = useState<MessageType>();
     
+    // Loading
     const [loading, setLoading] = useState(false);
 
     // Used to focus to input after submiting a note
@@ -51,12 +52,12 @@ export default function NoteForm({
 
     // Focus on input content when note created with success
     useEffect(() => {
-        if (message.type == 'success') {
+        if (message?.type == 'success') {
             inputRef.current?.focus();
         }
     }, [message]);
 
-    // Handle the form submit to create the note request to API
+    // Handle the form submit to create a new note
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -64,35 +65,36 @@ export default function NoteForm({
         resetMessage();
 
         try {
-            if (!selectedNote && !note._id) {
+            if (selectedNote && !note._id) {
                 throw new Error("Impossible de modifier une note sans identifiant.");
             }
 
-            const res = selectedNote ? await createNote(note) : await updateNote(note._id!, note);
+            const res = await createNote(note);
 
             if (!res) {
-                throw new Error("La requête de mise à jour a échoué.");
+                throw new Error("La requête de création d'une nouvelle note a échoué.");
             }
 
             if (res.success) {
+                // Set success message for user
                 setMessage({
-                    content: selectedNote ? "Note ajoutée avec succès !" : "Note modifiée avec succès !",
+                    content: "Note ajoutée avec succès !",
                     type: 'success',
                     visible: true
                 });
 
+                // Refresh notes displayed
                 triggerRefresh();
-                resetNote();
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             
+            // Set error message for user
             setMessage({
                 content: message,
                 type: 'error',
                 visible: true
             });
-            // console.error('Error submiting note to create : ', err);
         } finally {
             setLoading(false);
         }
@@ -107,16 +109,6 @@ export default function NoteForm({
         })
     }
 
-    // Reset note fields
-    function resetNote() {
-        setNote({
-            _id: undefined,
-            date: '',
-            content: '',
-            tags: []
-        });
-    }
-
     // Reset info message and handle note content changes
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setMessage({
@@ -127,6 +119,7 @@ export default function NoteForm({
         setNote({ ... note, content: e.target.value });
     }
 
+    // Delete a tag from database for a given note
     const handleDeleteTag = (key: string) => {
         setNote({
             ...note,
@@ -155,6 +148,7 @@ export default function NoteForm({
             return;
         }
 
+        // Generate a random key for a tag
         const tagKey = crypto.randomUUID();
 
         if (tagToAdd) {
@@ -176,13 +170,12 @@ export default function NoteForm({
         }
     }
 
+    // Reset note form inputs
     const handleResetNote = () => {
-        resetNote();
-        setMessage({
-            content: "",
-            type: "neutral",
-            visible: false
-        });
+        setSelectedNote(undefined);
+        setNote(emptyNote);
+        setTagToAdd('');
+        resetMessage();
     }
 
     return (
@@ -222,22 +215,23 @@ export default function NoteForm({
                     type="submit"
                     disabled={loading}
                 >
-                    {selectedNote ? "Ajouter" : "Modifier"}
+                    Créer la note
                 </Button>
                 <Button
-                    className="flex-1"
+                    className="w-12"
+                    icon={CgUndo}
                     secondary={true}
                     type="button"
                     onClick={handleResetNote}
                 >
-                    Annuler
                 </Button>
             </span>
+            {message &&
             <Message
                 content={message.content}
                 type={message.type}
                 visible={message.visible}
-            />
+            />}
         </form>
     );
 }

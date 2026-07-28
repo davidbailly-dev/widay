@@ -1,39 +1,45 @@
 "use client";
 
-import { CgSpinner } from "react-icons/cg";
+import { CgSpinnerAlt } from "react-icons/cg";
 
 import { NoteCard } from "@/components/notes/NoteCard";
-import Pagination from "@/components/ui/Pagination";
+import PaginationList from "@/components/ui/PaginationList";
 
-import type { Note } from "@/types";
+import type { Note, Pagination } from "@/types";
 
-interface Props {
+interface NotesListProps {
     refreshKey: number,
+    activePage: number,
     dateStart?: string,
     dateEnd?: string,
+    handleActivePage: (page: number) => void,
     limit?: number,
     loading: boolean,
     notes: Note[],
+    pagination?: Pagination,
     search?: string,
     selectedNote?: Note,
-    setSelectedNote: (note: Note) => void
+    setSelectedNote: (note: Note | undefined) => void
 };
 
 export default function NotesList({
+    activePage,
     loading,
+    handleActivePage,
     notes,
+    pagination,
     selectedNote,
     setSelectedNote,
-}: Props) {
+}: NotesListProps) {
     function handleSelectedNoteCard(note: Note) {
-        setSelectedNote(note);
+        setSelectedNote(note === selectedNote ? undefined : note);
     }
 
     // If notes data are loading
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full">
-                <CgSpinner className="animate-spin w-8 h-8 text-blue-500" />
+                <CgSpinnerAlt className="animate-spin w-8 h-8 text-emerald-500" />
             </div>
         );
     }
@@ -48,18 +54,22 @@ export default function NotesList({
     }
 
     return (
-        <div>
-            <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+        <div className="space-y-4 w-full">
+            <ul className="flex flex-col gap-4 w-full">
                 {notes.map((note) => (
                     <NoteCard
                         key={note._id}
                         note={note}
-                        selected={selectedNote?._id === note._id ? true : false}
+                        isSelected={selectedNote?._id === note._id ? true : false}
                         onClick={() => handleSelectedNoteCard(note)}
                     />
                 ))}
             </ul>
-            <Pagination activePage={1} totalPages={10} />
+            <PaginationList
+                className="flex justify-between w-full"
+                activePage={activePage}
+                onPageChange={handleActivePage}
+                totalPages={pagination?.totalPages} />
         </div>
     );
 }
