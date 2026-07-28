@@ -2,7 +2,7 @@ import { Tag } from "@/types";
 import { TagItem } from "@/components/tag/TagItem";
 
 interface Props {
-    className: string,
+    className?: string,
     tags: Tag[]
 }
 

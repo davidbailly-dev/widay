@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { CgSpinnerAlt } from "react-icons/cg";
 
 import { NoteCard } from "@/components/notes/NoteCard";
@@ -31,8 +33,12 @@ export default function NotesList({
     selectedNote,
     setSelectedNote,
 }: NotesListProps) {
-    function handleSelectedNoteCard(note: Note) {
-        setSelectedNote(note === selectedNote ? undefined : note);
+    const [selectedNoteId, setSelectedNoteId] = useState<string>('');
+
+    const handleSelectedNoteCard = (noteId: string | undefined) => {
+        if (noteId) {
+            setSelectedNoteId(noteId);
+        }
     }
 
     // If notes data are loading
@@ -60,8 +66,8 @@ export default function NotesList({
                     <NoteCard
                         key={note._id}
                         note={note}
-                        isSelected={selectedNote?._id === note._id ? true : false}
-                        onClick={() => handleSelectedNoteCard(note)}
+                        isSelected={selectedNoteId == note._id ? true : false}
+                        onClick={() => handleSelectedNoteCard(note._id)}
                     />
                 ))}
             </ul>
