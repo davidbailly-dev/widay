@@ -1,6 +1,3 @@
-// Main
-import { useEffect, useState } from "react";
-
 // Types
 import { Tag } from "@/types";
 

@@ -30,8 +30,6 @@ export default function NotesList({
     handleActivePage,
     notes,
     pagination,
-    selectedNote,
-    setSelectedNote,
 }: NotesListProps) {
     const [selectedNoteId, setSelectedNoteId] = useState<string>('');
 

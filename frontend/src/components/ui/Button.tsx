@@ -15,11 +15,9 @@ interface ButtonProps {
 }
 
 export default function Button({
-    active = false,
     className = '',
     disabled = false,
     icon: Icon,
-    secondary = false,
     type = 'button',
     onClick,
     children,

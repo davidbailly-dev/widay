@@ -18,8 +18,6 @@ import { useNotes } from "@/hooks/useNotes";
 // Icons
 import { CgUndo } from "react-icons/cg";
 
-const TAGS_LIMIT_PER_NOTE = 5;
-
 interface Props {
     className?: string,
     selectedNote?: Note,
@@ -44,7 +42,7 @@ export default function NoteForm({
     const [loading, setLoading] = useState(false);
 
     // Function that push request to note backend API
-    const { createNote, deleteNote, updateNote } = useNotes();
+    const { createNote } = useNotes();
 
     // Used to focus to input after submiting a note
     const inputRef = useRef<HTMLTextAreaElement>(null);
