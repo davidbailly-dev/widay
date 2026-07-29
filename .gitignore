@@ -79,3 +79,8 @@ tmp/
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# IA
+.claude
+backend/.claude
+frontend/.claude

@@ -29,8 +29,28 @@ export function NoteCard({
 }: Props) {
     const [tempNote, setTempNote] = useState(note);
 
-    const handleChangeDate = () => {
-        alert('Date saved');
+    // Handle date value modification
+    const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTempNote({
+            ...tempNote,
+            date: e.target.value.toString()
+        });
+    }
+
+    // Handle note content modifications
+    const handleChangeContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setTempNote({
+            ...tempNote,
+            content: e.target.value.toString()
+        });
+    }
+
+    // Handle tags modifications (addition or deletion)
+    const handleChangeTags = (newTags: Tag[]) => {
+        setTempNote({
+            ...tempNote,
+            tags: newTags
+        });
     }
 
     const handleDelete = () => {
@@ -43,14 +63,6 @@ export function NoteCard({
 
     const handleSave = () => {
         alert('Card saved');
-    }
-
-    // Handle tags modifications (addition or deletion)
-    const handleTagChange = (newTags: Tag[]) => {
-        setTempNote({
-            ...tempNote,
-            tags: newTags
-        });
     }
 
     return (
@@ -69,16 +81,16 @@ export function NoteCard({
             <form className={isSelected ? `flex flex-col gap-4` : 'hidden'}>
                 <span className="flex flex-wrap gap-2">
                     <Input
-                        onChange={handleChangeDate}
+                        onChange={(e) => handleChangeDate(e)}
                         type="date"
                         value={tempNote.date}
                     />
                     <TagList
-                        handleTagChange={(newTags: Tag[]) => handleTagChange(newTags)}
+                        handleTagChange={(newTags: Tag[]) => handleChangeTags(newTags)}
                         tags={tempNote.tags}
                     />
                     <TagInput
-                        handleTagChange={(newTags: Tag[]) => handleTagChange(newTags)}
+                        handleTagChange={(newTags: Tag[]) => handleChangeTags(newTags)}
                         tags={tempNote.tags}
                     />
                     <span className="flex-2 flex justify-end gap-2">
@@ -100,6 +112,7 @@ export function NoteCard({
                     </span>
                 </span>
                 <TextArea
+                    onChange={(e) => handleChangeContent(e)}
                     value={tempNote.content}  
                 />
             </form>
