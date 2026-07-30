@@ -23,7 +23,7 @@ export interface NavItemType {
 }
 
 export interface Note {
-    _id?: string,
+    _id: string,
     date?: string,
     content: string,
     tags: Tag[],

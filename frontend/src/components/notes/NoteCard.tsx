@@ -9,6 +9,9 @@ import TextArea from "@/components/ui/TextArea";
 import { TagList } from "@/components/tag/TagList";
 import TagInput from "@/components/tag/TagInput";
 
+// Hooks
+import { useNotes } from "@/hooks/useNotes";
+
 // Types
 import { Tag } from "@/types";
 
@@ -28,6 +31,7 @@ export function NoteCard({
     onClick
 }: Props) {
     const [tempNote, setTempNote] = useState(note);
+    const { updateNote } = useNotes();
 
     // Handle date value modification
     const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,8 +65,24 @@ export function NoteCard({
         alert('Note reset to original values');
     }
 
-    const handleSave = () => {
-        alert('Card saved');
+    async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        try {
+            const res = await updateNote(note._id, tempNote);
+
+            if (!res) {
+                throw new Error("La requête d'enregistrement de la note a échoué.");
+            }
+
+            if (res.success) {
+                alert("Note enregistrée avec succès !");
+            }
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+
+            alert("L'enregistrement de la note a échoué : " + message);
+        }
     }
 
     return (
@@ -78,7 +98,11 @@ export function NoteCard({
                 />
                 <p>{tempNote.content}</p>
             </div>
-            <form className={isSelected ? `flex flex-col gap-4` : 'hidden'}>
+            <form
+                className={isSelected ? `flex flex-col gap-4` : 'hidden'}
+                onSubmit={handleSubmit}
+            >
+                
                 <span className="flex flex-wrap gap-2">
                     <Input
                         onChange={(e) => handleChangeDate(e)}
@@ -97,7 +121,7 @@ export function NoteCard({
                         <Button
                             className="h-12 w-12"
                             icon={FiSave}
-                            onClick={handleSave}
+                            type="submit"
                         />
                         <Button
                             className="h-12 w-12"

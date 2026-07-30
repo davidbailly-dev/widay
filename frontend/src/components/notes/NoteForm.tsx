@@ -32,6 +32,7 @@ export default function NoteForm({
     setSelectedNote
 }: Props) {
     const emptyNote: Note = {
+        _id: '',
         date: '',
         content: '',
         tags: [],
