@@ -1,4 +1,4 @@
-import { IoCheckmarkCircleSharp, IoCloseCircleSharp, IoWarningSharp, IoInformationCircleSharp } from "react-icons/io5";
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp, IoWarningSharp, IoInformationCircleSharp, IoHourglass } from "react-icons/io5";
 
 import { MessageType } from "@/types";
 
@@ -6,6 +6,7 @@ const TYPE_CLASSES = {
     success: 'bg-emerald-600',
     error: 'bg-red-600',
     warning: 'bg-orange-600',
+    loading: 'bg-orange-600',
     neutral: 'bg-stone-500'
 }
 
@@ -13,10 +14,15 @@ const TYPE_ICONS = {
     success: IoCheckmarkCircleSharp,
     error: IoCloseCircleSharp,
     warning: IoWarningSharp,
-    neutral: IoInformationCircleSharp
+    neutral: IoInformationCircleSharp,
+    loading: IoHourglass
 }
 
-export default function Message({ content, type, visible }: MessageType) {
+export default function Message({
+    content = '',
+    type = 'neutral',
+    visible = false
+}: MessageType) {
     const IconComponent = TYPE_ICONS[type];
     
     return (

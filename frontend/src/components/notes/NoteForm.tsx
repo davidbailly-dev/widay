@@ -164,7 +164,6 @@ export default function NoteForm({
                 <Button
                     className="w-12"
                     icon={CgUndo}
-                    secondary={true}
                     type="button"
                     onClick={handleResetNote}
                 >

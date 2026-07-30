@@ -12,7 +12,7 @@ export interface ApiResponse {
 
 export interface MessageType {
     content: string,
-    type: 'success' | 'error' | 'warning' | 'neutral',
+    type: 'success' | 'error' | 'warning' | 'neutral' | 'loading',
     visible: boolean,
 }
 
