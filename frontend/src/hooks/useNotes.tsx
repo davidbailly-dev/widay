@@ -7,15 +7,28 @@ export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [pagination, setPagination] = useState<Pagination | undefined>();
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | undefined>();
 
-    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string, page?: number) => {
+    const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string, page?: number, append?: boolean) => {
         try {
-            setLoading(true);
+            if (append) {
+                setLoadingMore(true);
+            } else {
+                setLoading(true);
+            }
 
             const notes = await noteService.get(dateStart, dateEnd, limit, search, page);
             
-            setNotes(notes.data?.notes || []);
+            if (append) {
+                setNotes(prev => [
+                    ...prev,
+                    ...(notes.data?.notes || [])
+                ]);
+            } else {
+                setNotes(notes.data?.notes || []);
+            }
+
             setPagination(notes.data?.pagination);
 
             return notes.data;
@@ -24,6 +37,7 @@ export const useNotes = () => {
             throw error;
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
     }, []);
 
@@ -73,6 +87,7 @@ export const useNotes = () => {
         notes,
         pagination,
         loading,
+        loadingMore,
         getNotes,
         createNote,
         deleteNote,
