@@ -14,20 +14,17 @@ interface Props {
     tags: Tag[],
     className?: string,
     handleTagChange?: (newTags: Tag[]) => void,
+    onTagInputChange?: () => void,
 }
 
 export default function TagInput({
     className,
     tags = [],
     handleTagChange,
+    onTagInputChange,
 }: Props) {
     const [tagToAdd, setTagToAdd] = useState('');
     const disabled = tags.length >= TAGS_LIMIT_PER_NOTE;
-
-    // useEffect(() => {
-    //     // If tags limit is reached, disabled the possibility to add new ones
-    //     disabled = tags.length >= TAGS_LIMIT_PER_NOTE
-    // }, [tags]);
 
     // Add a new tag
     const handleAddTag = () => {
@@ -42,6 +39,7 @@ export default function TagInput({
 
     const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTagToAdd(e.target.value.trim());
+        onTagInputChange?.();
     }
 
     const inputRef = useRef<HTMLInputElement>(null);
