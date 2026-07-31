@@ -17,39 +17,50 @@ import TextArea from "@/components/ui/TextArea";
 import { useNotes } from "@/hooks/useNotes";
 
 // Icons
-import { CgUndo } from "react-icons/cg";
+import { CgSpinnerAlt, CgUndo } from "react-icons/cg";
+
+const DEFAULT_USER_MESSAGE: MessageType = {
+    content: '',
+    type: 'neutral',
+    visible: false
+};
+
+const DEFAULT_NOTE: Note = {
+    _id: '',
+    date: '',
+    content: '',
+    tags: [],
+}
 
 interface Props {
     className?: string,
+    today: string,
     triggerRefresh: () => void,
 }
 
 export default function NoteForm({
     className,
+    today,
     triggerRefresh,
 }: Props) {
-    const emptyNote: Note = {
-        _id: '',
-        date: new Date().toISOString().split('T')[0],
-        content: '',
-        tags: [],
-    };
-
-    const [newNote, setNewNote] = useState(emptyNote);
-    const [message, setMessage] = useState<MessageType>();
+    const [newNote, setNewNote] = useState<Note>({
+        ...DEFAULT_NOTE,
+        date: today
+    });
+    const [userMessage, setUserMessage] = useState<MessageType>(DEFAULT_USER_MESSAGE);
 
     // Function that push request to note backend API
-    const { createNote } = useNotes();
+    const { createNote, loading } = useNotes();
 
     // Used to focus to input after submiting a note
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
     // Focus on input content when note created with success
     useEffect(() => {
-        if (message?.type == 'success') {
+        if (userMessage?.type == 'success') {
             inputRef.current?.focus();
         }
-    }, [message]);
+    }, [userMessage]);
 
     // Handle the form submit to create a new note
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -66,10 +77,15 @@ export default function NoteForm({
 
             if (res.success) {
                 // Set success message for user
-                setMessage({
+                setUserMessage({
                     content: "Note ajoutée avec succès !",
                     type: 'success',
                     visible: true
+                });
+
+                setNewNote({
+                    ...DEFAULT_NOTE,
+                    date: today,
                 });
 
                 // Refresh notes displayed
@@ -79,7 +95,7 @@ export default function NoteForm({
             const message = error instanceof Error ? error.message : 'Unknown error';
             
             // Set error message for user
-            setMessage({
+            setUserMessage({
                 content: message,
                 type: 'error',
                 visible: true
@@ -89,7 +105,7 @@ export default function NoteForm({
 
     // Reset info message for user
     function resetMessage() {
-        setMessage({
+        setUserMessage({
             content: '',
             type: 'neutral',
             visible: false
@@ -98,15 +114,12 @@ export default function NoteForm({
 
     // Reset info message and handle note content changes
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setMessage({
-            content: '',
-            type: 'success',
-            visible: false
-        })
+        setUserMessage(DEFAULT_USER_MESSAGE);
         setNewNote({ ...newNote, content: e.target.value });
     }
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserMessage(DEFAULT_USER_MESSAGE);
         setNewNote({
             ...newNote,
             date: e.target.value
@@ -114,7 +127,8 @@ export default function NoteForm({
     }
 
     // Set the current tag that the user is typing
-    const handleTagInputChange = (newTags: Tag[]) => {
+    const handleTagsChange = (newTags: Tag[]) => {
+        setUserMessage(DEFAULT_USER_MESSAGE);
         setNewNote(
             {
                 ...newNote,
@@ -138,17 +152,25 @@ export default function NoteForm({
 
     // Reset note form inputs
     const handleResetNote = () => {
-        setNewNote(emptyNote);
+        setNewNote({
+            ...DEFAULT_NOTE,
+            date: today,
+        });
         resetMessage();
     }
 
     return (
         <form
-            className={`flex flex-col gap-4 w-full ${className}`}
+            className={`relative flex flex-col gap-4 w-full ${className}`}
             onSubmit={handleSubmit}
         >
+            {loading &&
+                <div className="absolute inset-0 z-10 flex justify-center items-center bg-stone-900 opacity-90 rounded-md">
+                    <CgSpinnerAlt className="animate-spin w-8 h-8 text-emerald-500" />
+                </div>
+            }
             <TagList
-                handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
+                handleTagChange={(newTags: Tag[]) => handleTagsChange(newTags)}
                 tags={newNote.tags}
             />
             <TextArea
@@ -163,7 +185,8 @@ export default function NoteForm({
                 />
                 <TagInput
                     className="flex-2"
-                    handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
+                    handleTagChange={(newTags: Tag[]) => handleTagsChange(newTags)}
+                    onTagInputChange={() => setUserMessage(DEFAULT_USER_MESSAGE)}
                     tags={newNote.tags}
                 />
             </span>
@@ -183,11 +206,11 @@ export default function NoteForm({
                 >
                 </Button>
             </span>
-            {message &&
+            {userMessage &&
             <Message
-                content={message.content}
-                type={message.type}
-                visible={message.visible}
+                content={userMessage.content}
+                type={userMessage.type}
+                visible={userMessage.visible}
             />}
         </form>
     );

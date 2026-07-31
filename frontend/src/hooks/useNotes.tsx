@@ -6,7 +6,7 @@ import { noteService } from '@/services/api/note.service';
 export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [pagination, setPagination] = useState<Pagination | undefined>();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | undefined>();
 
     const getNotes = useCallback(async (dateStart?: string, dateEnd?: string, limit?: number, search?: string, page?: number) => {

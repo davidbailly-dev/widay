@@ -38,6 +38,8 @@ export default function Home() {
         setRefreshKey(key);
     };
 
+    const today = new Date().toISOString().split('T')[0];
+
     return (
         <div className="w-full">
             <div className="sticky top-0">
@@ -51,6 +53,7 @@ export default function Home() {
             <div className="flex flex-col w-full lg:w-2/3 p-6 gap-6 m-auto">
                 <NoteForm
                     key={selectedNote?._id ?? 'new'}
+                    today={today}
                     triggerRefresh={handleRefreshNotesList}
                 />
                 <NotesList

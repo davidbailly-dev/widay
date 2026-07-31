@@ -10,7 +10,7 @@ interface Props {
 
 export default function Input({
     className = '',
-    disabled=false,
+    disabled = false,
     inputRef,
     placeholder='',
     type = "text",
