@@ -18,7 +18,7 @@ import { MessageType, Tag } from "@/types";
 
 // Icons
 import { FiSave, FiTrash2 } from "react-icons/fi";
-import { CgSpinnerAlt, CgUndo } from "react-icons/cg";
+import { CgSpinnerAlt } from "react-icons/cg";
 
 const DEFAULT_USER_MESSAGE: MessageType = {
     content: '',
@@ -30,19 +30,22 @@ interface Props {
     note: Note,
     isSelected?: boolean,
     onClick?: () => void
+    onDelete?: () => void
 }
 
 export function NoteCard({
     note,
     isSelected = false,
-    onClick
+    onClick,
+    onDelete
 }: Props) {
     const [loading, setLoading] = useState(false);
+    const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [prevIsSelected, setPrevIsSelected] = useState(isSelected);
     const [tempNote, setTempNote] = useState(note);
     const [userMessage, setUserMessage] = useState<MessageType>(DEFAULT_USER_MESSAGE);
-    const { updateNote } = useNotes();
+    const { deleteNote, updateNote } = useNotes();
 
     // Used to manage 'Message' component visibilty
     // if it has been displayed previously
@@ -84,12 +87,44 @@ export function NoteCard({
         setIsEditing(true);
     }
 
-    const handleDelete = () => {
-        alert('Note deleted');
-    }
+    async function handleDelete() {
+        const confirmed = window.confirm("Voulez-vous vraiment supprimer cette note ?");
 
-    const handleReset = () => {
-        alert('Note reset to original values');
+        if (!confirmed) {
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await deleteNote(note._id);
+
+            if (!res || !res.success) {
+                throw new Error("La requête de suppression de la note a échouée.");
+            }
+
+            setUserMessage({
+                content: "Note supprimée avec succès !",
+                type: 'success',
+                visible: true
+            });
+
+            setHasBeenDeleted(true);
+
+            setTimeout(() => {
+                onDelete?.();
+            }, 2000);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            
+            setUserMessage({
+                content: "Echec lors de la suppression : " + message,
+                type: 'error',
+                visible: true
+            });
+        } finally {
+            setLoading(false);
+        }
     }
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -132,61 +167,60 @@ export function NoteCard({
             onClick={onClick}
         >
             {loading &&
-            <div className="absolute inset-0 z-10 flex justify-center items-center bg-stone-900 opacity-90 rounded-md">
-                <CgSpinnerAlt className="animate-spin w-8 h-8 text-emerald-500" />
-            </div>
+                <div className="absolute inset-0 z-10 flex justify-center items-center bg-stone-900 opacity-90 rounded-md">
+                    <CgSpinnerAlt className="animate-spin w-8 h-8 text-emerald-500" />
+                </div>
             }
-            <div className={isSelected ? 'hidden' : 'flex flex-col gap-2'}>
-                <span className="text-emerald-200">{tempNote.date}</span>
-                <TagList
-                    tags={tempNote.tags}
-                />
-                <p>{tempNote.content}</p>
-            </div>
-            <form
-                className={isSelected ? `flex flex-col gap-4` : 'hidden'}
-                onSubmit={handleSubmit}
-            >
-                
-                <span className="flex flex-wrap gap-2">
-                    <Input
-                        onChange={(e) => handleChangeDate(e)}
-                        type="date"
-                        value={tempNote.date}
-                    />
+            {!hasBeenDeleted && (
+                <>
+                <div className={isSelected ? 'hidden' : 'flex flex-col gap-2'}>
+                    <span className="text-emerald-200">{tempNote.date}</span>
                     <TagList
-                        handleTagChange={(newTags: Tag[]) => handleChangeTags(newTags)}
                         tags={tempNote.tags}
                     />
-                    <TagInput
-                        handleTagChange={(newTags: Tag[]) => handleChangeTags(newTags)}
-                        tags={tempNote.tags}
-                    />
-                    <span className="flex-2 flex justify-end gap-2">
-                        <Button
-                            className="h-12 w-12"
-                            disabled={loading}
-                            icon={FiSave}
-                            secondary={isEditing}
-                            type="submit"
+                    <p>{tempNote.content}</p>
+                </div>
+                <form
+                    className={isSelected ? `flex flex-col gap-4` : 'hidden'}
+                    onSubmit={handleSubmit}
+                >
+                    
+                    <span className="flex flex-wrap gap-2">
+                        <Input
+                            onChange={(e) => handleChangeDate(e)}
+                            type="date"
+                            value={tempNote.date}
                         />
-                        <Button
-                            className="h-12 w-12"
-                            icon={CgUndo}
-                            onClick={handleReset}
+                        <TagList
+                            handleTagChange={(newTags: Tag[]) => handleChangeTags(newTags)}
+                            tags={tempNote.tags}
                         />
-                        <Button
-                            className="h-12 w-12"
-                            icon={FiTrash2}
-                            onClick={handleDelete}
+                        <TagInput
+                            handleTagChange={(newTags: Tag[]) => handleChangeTags(newTags)}
+                            tags={tempNote.tags}
                         />
+                        <span className="flex-2 flex justify-end gap-2">
+                            <Button
+                                className="h-12 w-12"
+                                disabled={loading}
+                                icon={FiSave}
+                                secondary={isEditing}
+                                type="submit"
+                            />
+                            <Button
+                                className="h-12 w-12"
+                                icon={FiTrash2}
+                                onClick={handleDelete}
+                            />
+                        </span>
                     </span>
-                </span>
-                <TextArea
-                    onChange={(e) => handleChangeContent(e)}
-                    value={tempNote.content}  
-                />
-            </form>
+                    <TextArea
+                        onChange={(e) => handleChangeContent(e)}
+                        value={tempNote.content}  
+                    />
+                </form>
+                </>
+            )}
             {userMessage.visible && isSelected && (
                 <Message
                     content={userMessage.content}

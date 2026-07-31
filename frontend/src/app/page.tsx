@@ -52,8 +52,6 @@ export default function Home() {
                 <NoteForm
                     key={selectedNote?._id ?? 'new'}
                     triggerRefresh={handleRefreshNotesList}
-                    selectedNote={selectedNote}
-                    setSelectedNote={setSelectedNote}
                 />
                 <NotesList
                     activePage={activePage}
@@ -62,6 +60,7 @@ export default function Home() {
                     notes={notes}
                     pagination={pagination}
                     refreshKey={refreshKey}
+                    refreshNotes={handleRefreshNotesList}
                     search={search}
                     selectedNote={selectedNote}
                     setSelectedNote={setSelectedNote}

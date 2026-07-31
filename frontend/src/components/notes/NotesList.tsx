@@ -10,17 +10,18 @@ import PaginationList from "@/components/ui/PaginationList";
 import type { Note, Pagination } from "@/types";
 
 interface NotesListProps {
-    refreshKey: number,
     activePage: number,
     dateStart?: string,
     dateEnd?: string,
-    handleActivePage: (page: number) => void,
     limit?: number,
     loading: boolean,
     notes: Note[],
     pagination?: Pagination,
+    refreshKey: number,
     search?: string,
     selectedNote?: Note,
+    handleActivePage: (page: number) => void,
+    refreshNotes: () => void,
     setSelectedNote: (note: Note | undefined) => void
 };
 
@@ -30,6 +31,7 @@ export default function NotesList({
     handleActivePage,
     notes,
     pagination,
+    refreshNotes,
 }: NotesListProps) {
     const [selectedNoteId, setSelectedNoteId] = useState<string>('');
 
@@ -66,6 +68,7 @@ export default function NotesList({
                         note={note}
                         isSelected={selectedNoteId == note._id ? true : false}
                         onClick={() => handleSelectedNoteCard(note._id)}
+                        onDelete={refreshNotes}
                     />
                 ))}
             </ul>

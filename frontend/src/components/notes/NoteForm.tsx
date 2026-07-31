@@ -7,6 +7,7 @@ import { MessageType, Note, Tag } from "@/types";
 
 // Components
 import Button from "@/components/ui/Button";
+import InputDate from "@/components/ui/InputDate";
 import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
 import { TagList } from "@/components/tag/TagList";
@@ -20,27 +21,22 @@ import { CgUndo } from "react-icons/cg";
 
 interface Props {
     className?: string,
-    selectedNote?: Note,
     triggerRefresh: () => void,
-    setSelectedNote: (note: Note | undefined) => void
 }
 
 export default function NoteForm({
     className,
     triggerRefresh,
-    selectedNote,
-    setSelectedNote
 }: Props) {
     const emptyNote: Note = {
         _id: '',
-        date: '',
+        date: new Date().toISOString().split('T')[0],
         content: '',
         tags: [],
     };
 
-    const [note, setNote] = useState(() => selectedNote ?? emptyNote);
+    const [newNote, setNewNote] = useState(emptyNote);
     const [message, setMessage] = useState<MessageType>();
-    const [loading, setLoading] = useState(false);
 
     // Function that push request to note backend API
     const { createNote } = useNotes();
@@ -59,15 +55,10 @@ export default function NoteForm({
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        setLoading(true);
         resetMessage();
 
         try {
-            if (selectedNote && !note._id) {
-                throw new Error("Impossible de modifier une note sans identifiant.");
-            }
-
-            const res = await createNote(note);
+            const res = await createNote(newNote);
 
             if (!res) {
                 throw new Error("La requête de création d'une nouvelle note a échoué.");
@@ -93,8 +84,6 @@ export default function NoteForm({
                 type: 'error',
                 visible: true
             });
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -114,23 +103,42 @@ export default function NoteForm({
             type: 'success',
             visible: false
         })
-        setNote({ ... note, content: e.target.value });
+        setNewNote({ ...newNote, content: e.target.value });
+    }
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewNote({
+            ...newNote,
+            date: e.target.value
+        })
     }
 
     // Set the current tag that the user is typing
     const handleTagInputChange = (newTags: Tag[]) => {
-        setNote(
+        setNewNote(
             {
-                ...note,
+                ...newNote,
                 tags: newTags
             }
         );
     }
 
+    // Check if all note inputs are valid for creation
+    function noteIsValid() {
+        if (!newNote.content) {
+            return false;
+        }
+
+        if (!newNote.date) {
+            return false;
+        }
+
+        return true;
+    }
+
     // Reset note form inputs
     const handleResetNote = () => {
-        setSelectedNote(undefined);
-        setNote(emptyNote);
+        setNewNote(emptyNote);
         resetMessage();
     }
 
@@ -141,23 +149,29 @@ export default function NoteForm({
         >
             <TagList
                 handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
-                tags={note.tags}
+                tags={newNote.tags}
             />
             <TextArea
-                value={note.content}
+                value={newNote.content}
                 inputRef={inputRef}
                 onChange={(e) => {handleContentChange(e)}}
             />
-            <TagInput
-                className="flex-2"
-                handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
-                tags={note.tags}
-            />
+            <span className="flex gap-2">
+                <InputDate
+                    onChange={handleDateChange}
+                    value={newNote.date}
+                />
+                <TagInput
+                    className="flex-2"
+                    handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
+                    tags={newNote.tags}
+                />
+            </span>
             <span className="flex gap-4">
                 <Button
                     className="flex-1"
+                    disabled={noteIsValid() ? false : true}
                     type="submit"
-                    disabled={loading}
                 >
                     Créer la note
                 </Button>
