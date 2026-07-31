@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { CgSpinnerAlt } from "react-icons/cg";
 
 import { NoteCard } from "@/components/notes/NoteCard";
@@ -8,17 +10,18 @@ import PaginationList from "@/components/ui/PaginationList";
 import type { Note, Pagination } from "@/types";
 
 interface NotesListProps {
-    refreshKey: number,
     activePage: number,
     dateStart?: string,
     dateEnd?: string,
-    handleActivePage: (page: number) => void,
     limit?: number,
     loading: boolean,
     notes: Note[],
     pagination?: Pagination,
+    refreshKey: number,
     search?: string,
     selectedNote?: Note,
+    handleActivePage: (page: number) => void,
+    refreshNotes: () => void,
     setSelectedNote: (note: Note | undefined) => void
 };
 
@@ -28,11 +31,14 @@ export default function NotesList({
     handleActivePage,
     notes,
     pagination,
-    selectedNote,
-    setSelectedNote,
+    refreshNotes,
 }: NotesListProps) {
-    function handleSelectedNoteCard(note: Note) {
-        setSelectedNote(note === selectedNote ? undefined : note);
+    const [selectedNoteId, setSelectedNoteId] = useState<string>('');
+
+    const handleSelectedNoteCard = (noteId: string | undefined) => {
+        if (noteId) {
+            setSelectedNoteId(noteId);
+        }
     }
 
     // If notes data are loading
@@ -60,8 +66,9 @@ export default function NotesList({
                     <NoteCard
                         key={note._id}
                         note={note}
-                        isSelected={selectedNote?._id === note._id ? true : false}
-                        onClick={() => handleSelectedNoteCard(note)}
+                        isSelected={selectedNoteId == note._id ? true : false}
+                        onClick={() => handleSelectedNoteCard(note._id)}
+                        onDelete={refreshNotes}
                     />
                 ))}
             </ul>

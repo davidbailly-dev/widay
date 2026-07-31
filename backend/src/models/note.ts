@@ -15,7 +15,7 @@ const noteSchema = new mongoose.Schema<Note>({
     tags: {
         type: [{
             key: { type: String, required: true},
-            label: { type: String, required: true}
+            label: { type: String, required: true, maxLength: 30}
         }],
         default: [],
         validate: {

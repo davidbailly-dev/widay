@@ -1,51 +1,45 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { CgUndo } from "react-icons/cg";
 
-import { MessageType, Note } from "@/types";
+// Types
+import { MessageType, Note, Tag } from "@/types";
+
+// Components
 import Button from "@/components/ui/Button";
+import InputDate from "@/components/ui/InputDate";
 import Message from "@/components/ui/Message";
 import TagInput from "@/components/tag/TagInput";
-import { TagItem } from '@/components/tag/TagItem';
+import { TagList } from "@/components/tag/TagList";
 import TextArea from "@/components/ui/TextArea";
 
+// Hooks
 import { useNotes } from "@/hooks/useNotes";
 
-const TAGS_LIMIT_PER_NOTE = 5;
+// Icons
+import { CgUndo } from "react-icons/cg";
 
 interface Props {
-    className?: string;
-    selectedNote?: Note,
-    triggerRefresh: () => void;
-    setSelectedNote: (note: Note | undefined) => void;
+    className?: string,
+    triggerRefresh: () => void,
 }
 
 export default function NoteForm({
     className,
     triggerRefresh,
-    selectedNote,
-    setSelectedNote
 }: Props) {
-    const [tagToAdd, setTagToAdd] = useState(''); // The tag that the user is inputing before adding it
-    const [disabledTagInput, setDisabledTagInput] = useState(false); // Used to disabled TagInput component if max tags limit has been reached
     const emptyNote: Note = {
-        date: '',
+        _id: '',
+        date: new Date().toISOString().split('T')[0],
         content: '',
         tags: [],
     };
 
-    // Function that push request to note backend API
-    const { createNote, deleteNote, updateNote } = useNotes();
-
-    // Set selected note or empty note
-    const [note, setNote] = useState(() => selectedNote ?? emptyNote);
-
-    // Message content
+    const [newNote, setNewNote] = useState(emptyNote);
     const [message, setMessage] = useState<MessageType>();
-    
-    // Loading
-    const [loading, setLoading] = useState(false);
+
+    // Function that push request to note backend API
+    const { createNote } = useNotes();
 
     // Used to focus to input after submiting a note
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -61,15 +55,10 @@ export default function NoteForm({
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        setLoading(true);
         resetMessage();
 
         try {
-            if (selectedNote && !note._id) {
-                throw new Error("Impossible de modifier une note sans identifiant.");
-            }
-
-            const res = await createNote(note);
+            const res = await createNote(newNote);
 
             if (!res) {
                 throw new Error("La requête de création d'une nouvelle note a échoué.");
@@ -95,8 +84,6 @@ export default function NoteForm({
                 type: 'error',
                 visible: true
             });
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -116,65 +103,42 @@ export default function NoteForm({
             type: 'success',
             visible: false
         })
-        setNote({ ... note, content: e.target.value });
+        setNewNote({ ...newNote, content: e.target.value });
     }
 
-    // Delete a tag from database for a given note
-    const handleDeleteTag = (key: string) => {
-        setNote({
-            ...note,
-            tags: note.tags?.filter((tag) => tag.key !== key)
-        });
-
-        const countTagsAdded = note.tags?.length || 0;
-
-        if (countTagsAdded <= TAGS_LIMIT_PER_NOTE) {
-            setDisabledTagInput(false);
-        }
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewNote({
+            ...newNote,
+            date: e.target.value
+        })
     }
 
     // Set the current tag that the user is typing
-    const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTagToAdd(e.target.value.trim());
+    const handleTagInputChange = (newTags: Tag[]) => {
+        setNewNote(
+            {
+                ...newNote,
+                tags: newTags
+            }
+        );
     }
 
-    // Add the tag to the note tags list
-    const handleTagInputClick = () => {
-        const countTagsAdded = note.tags?.length || 0;
-
-        // Limits the number of tags for a note
-        if (countTagsAdded >= TAGS_LIMIT_PER_NOTE) {
-            setDisabledTagInput(true);
-            return;
+    // Check if all note inputs are valid for creation
+    function noteIsValid() {
+        if (!newNote.content) {
+            return false;
         }
 
-        // Generate a random key for a tag
-        const tagKey = crypto.randomUUID();
-
-        if (tagToAdd) {
-            // Add the tag to the note tags
-            setNote({
-                ...note,
-                tags: [
-                    ...(note.tags),
-                    {
-                        key: tagKey,
-                        label: tagToAdd
-                    }
-                ]});
-            setTagToAdd('');
-
-            if (countTagsAdded + 1 >= TAGS_LIMIT_PER_NOTE) {
-                setDisabledTagInput(true);
-            }
+        if (!newNote.date) {
+            return false;
         }
+
+        return true;
     }
 
     // Reset note form inputs
     const handleResetNote = () => {
-        setSelectedNote(undefined);
-        setNote(emptyNote);
-        setTagToAdd('');
+        setNewNote(emptyNote);
         resetMessage();
     }
 
@@ -183,44 +147,37 @@ export default function NoteForm({
             className={`flex flex-col gap-4 w-full ${className}`}
             onSubmit={handleSubmit}
         >
-            {note.tags && note.tags.length > 0 && (
-            <span className="flex gap-2">
-            {note.tags?.map((tag) => (
-                <TagItem
-                    key={tag.key}
-                    name={tag.label}
-                    onClick={() => {
-                        handleDeleteTag(tag.key);
-                    }} />
-            ))}
-            </span>
-            )}
+            <TagList
+                handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
+                tags={newNote.tags}
+            />
             <TextArea
-                value={note.content}
+                value={newNote.content}
                 inputRef={inputRef}
                 onChange={(e) => {handleContentChange(e)}}
             />
-            <span className="flex flex-row gap-4 w-full">
+            <span className="flex gap-2">
+                <InputDate
+                    onChange={handleDateChange}
+                    value={newNote.date}
+                />
                 <TagInput
                     className="flex-2"
-                    value={tagToAdd}
-                    disabled={disabledTagInput}
-                    onChange={handleTagInputChange}
-                    onClick={handleTagInputClick}
+                    handleTagChange={(newTags: Tag[]) => handleTagInputChange(newTags)}
+                    tags={newNote.tags}
                 />
             </span>
             <span className="flex gap-4">
                 <Button
                     className="flex-1"
+                    disabled={noteIsValid() ? false : true}
                     type="submit"
-                    disabled={loading}
                 >
                     Créer la note
                 </Button>
                 <Button
                     className="w-12"
                     icon={CgUndo}
-                    secondary={true}
                     type="button"
                     onClick={handleResetNote}
                 >
